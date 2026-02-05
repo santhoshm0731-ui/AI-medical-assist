@@ -1,0 +1,584 @@
+{% extends 'base.html' %}
+{% block title %}Pharmacy Marketplace{% endblock %}
+{% block content %}
+
+<style>
+  body {
+    background: radial-gradient(circle at top left, #e0f7fa 0%, #f9fafb 40%, #e0e7ff 85%);
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  .pharmacy-page {
+    min-height: calc(100vh - 80px);
+    padding: 30px 0 40px;
+  }
+
+  .pharmacy-shell {
+    max-width: 1180px;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.97);
+    border-radius: 22px;
+    box-shadow: 0 20px 52px rgba(15,23,42,0.18);
+    border: 1px solid rgba(226,232,240,0.9);
+    backdrop-filter: blur(18px);
+    padding: 20px 20px 18px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .pharmacy-shell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top right, rgba(56,189,248,0.18), transparent 60%);
+    opacity: 0.9;
+    pointer-events: none;
+  }
+
+  .pharmacy-inner {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  .pharmacy-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .pharmacy-title-wrap h3 {
+    margin: 0;
+    font-weight: 800;
+    color: #0f172a;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .pharmacy-title-wrap h3 span.icon {
+    font-size: 1.5rem;
+  }
+
+  .pharmacy-subtitle {
+    margin: 3px 0 0;
+    font-size: 0.86rem;
+    color: #6b7280;
+  }
+
+  .pharmacy-header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .pharmacy-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    background: rgba(56,189,248,0.08);
+    color: #0369a1;
+    border: 1px solid rgba(56,189,248,0.28);
+  }
+
+  .pharmacy-back-btn {
+    border-radius: 999px;
+    font-size: 0.8rem;
+    padding: 7px 12px;
+    font-weight: 600;
+  }
+
+  /* TOOLBAR */
+  .pharmacy-toolbar {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .search-wrap {
+    display: flex;
+    flex: 1;
+    max-width: 360px;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .search-wrap input {
+    flex: 1;
+    border-radius: 999px;
+    border: 1px solid #d1d5db;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    background: #f9fafb;
+  }
+
+  .search-wrap input:focus {
+    outline: none;
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 1px rgba(14,165,233,0.3);
+    background: #ffffff;
+  }
+
+  .toolbar-tip {
+    font-size: 0.8rem;
+    color: #6b7280;
+  }
+
+  /* CARD GRID */
+  .pharmacy-grid {
+    margin-top: 6px;
+  }
+
+  .pharmacy-card {
+    background: linear-gradient(145deg, #ffffff, #f9fafb);
+    border-radius: 18px;
+    box-shadow: 0 8px 24px rgba(15,23,42,0.10);
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transition: transform .18s ease, box-shadow .22s ease, border-color .18s ease;
+    border: 1px solid #e5e7eb;
+    position: relative;
+  }
+
+  .pharmacy-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top left, rgba(56,189,248,0.12), transparent 65%);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+  }
+
+  .pharmacy-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 14px 34px rgba(15,23,42,0.18);
+    border-color: rgba(56,189,248,0.45);
+    background: #ffffff;
+  }
+
+  .pharmacy-card:hover::before {
+    opacity: 1;
+  }
+
+  .pharmacy-img {
+    width: 100%;
+    height: 170px;
+    object-fit: cover;
+    background: #f1f5f9;
+  }
+
+  .pharmacy-body {
+    padding: 12px 14px 12px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .med-name {
+    font-weight: 700;
+    color: #0f766e;
+    font-size: 1.02rem;
+    margin-bottom: 2px;
+  }
+
+  .pharmacy-name-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 2px;
+  }
+
+  .pharmacy-name {
+    font-weight: 600;
+    color: #0369a1;
+    font-size: 0.9rem;
+  }
+
+  .pharmacy-badge {
+    font-size: 0.7rem;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: #ecfeff;
+    color: #0e7490;
+    border: 1px solid #bae6fd;
+  }
+
+  .pharmacy-address {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-bottom: 6px;
+  }
+
+  .price-stock-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+    font-size: 0.9rem;
+  }
+
+  .price-tag {
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  .qty-text {
+    font-size: 0.8rem;
+    color: #6b7280;
+  }
+
+  .qty-text .in-stock {
+    color: #15803d;
+    font-weight: 600;
+  }
+
+  .qty-text .out-stock {
+    color: #dc2626;
+    font-weight: 600;
+  }
+
+  .qty-text .low-stock {
+    color: #f97316;
+    font-weight: 600;
+  }
+
+  .pay-pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+
+  .pay-pill {
+    font-size: 0.7rem;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: #f9fafb;
+    color: #4b5563;
+    border: 1px solid #e5e7eb;
+  }
+
+  .pay-pill.upi {
+    background: #ecfdf5;
+    color: #047857;
+    border-color: #bbf7d0;
+  }
+
+  .card-footer-note {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    margin-top: 4px;
+  }
+
+  /* Buttons */
+  .buy-btn {
+    border-radius: 999px;
+    width: 100%;
+    font-weight: 600;
+    font-size: 0.88rem;
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    border: none;
+    box-shadow: 0 6px 16px rgba(22,163,74,0.35);
+  }
+
+  .buy-btn:hover {
+    filter: brightness(1.03);
+    box-shadow: 0 8px 20px rgba(22,163,74,0.45);
+  }
+
+  .order-form {
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px dashed #e5e7eb;
+    display: none; /* hidden by default */
+  }
+
+  .order-form.show {
+    display: block;
+  }
+
+  .payment-option-label {
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    padding: 6px 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.82rem;
+    background: #f9fafb;
+  }
+
+  .payment-option-label:hover {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+  }
+
+  .payment-option-label input {
+    margin-right: 4px;
+  }
+
+  .cancel-order-link {
+    font-size: 0.78rem;
+    color: #6b7280;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  .upi-qr-img {
+    max-width: 120px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+  }
+
+  /* Empty state */
+  .pharmacy-empty {
+    margin-top: 26px;
+  }
+
+  @media (max-width: 576px) {
+    .pharmacy-shell {
+      padding: 18px 14px 16px;
+      border-radius: 20px;
+    }
+    .search-wrap {
+      max-width: 100%;
+    }
+  }
+</style>
+
+<div class="pharmacy-page">
+  <div class="pharmacy-shell">
+    <div class="pharmacy-inner">
+
+      <!-- Header -->
+      <div class="pharmacy-header">
+        <div class="pharmacy-title-wrap">
+          <h3>
+            <span class="icon">💊</span>
+            <span>Pharmacy Marketplace</span>
+          </h3>
+          <p class="pharmacy-subtitle">
+            Browse available medicines from partner pharmacies and place orders quickly.
+          </p>
+        </div>
+        <div class="pharmacy-header-actions">
+          {% if medicines %}
+            <div class="pharmacy-chip">
+              <span>Items: {{ medicines|length }}</span>
+            </div>
+          {% endif %}
+          <a href="{% url 'patient_dashboard' %}" class="btn btn-outline-secondary btn-sm pharmacy-back-btn">
+            ← Back to Dashboard
+          </a>
+        </div>
+      </div>
+
+      <!-- Toolbar: search + tip -->
+      {% if medicines %}
+      <div class="pharmacy-toolbar">
+        <div class="search-wrap">
+          <input id="medSearch" type="search" placeholder="Search by medicine or pharmacy name...">
+        </div>
+        <div class="toolbar-tip">
+          Tip: Type to filter cards instantly on this page.
+        </div>
+      </div>
+      {% endif %}
+
+      {% if medicines %}
+        <div class="row g-4 pharmacy-grid" id="pharmacyGrid">
+          {% for med in medicines %}
+          <div class="col-md-4 col-sm-6 pharmacy-card-col">
+            <div class="pharmacy-card">
+              {% if med.image %}
+                <img src="{{ med.image.url }}" class="pharmacy-img" alt="{{ med.name }}">
+              {% else %}
+                <img src="https://via.placeholder.com/400x200?text=Medicine+Image"
+                     class="pharmacy-img" alt="No image">
+              {% endif %}
+
+              <div class="pharmacy-body">
+                <div class="med-name">{{ med.name }}</div>
+
+                <div class="pharmacy-name-row">
+                  <div class="pharmacy-name">🏪 {{ med.pharmacy.pharmacy_name }}</div>
+                  <div class="pharmacy-badge">
+                    Pharmacy ID: #{{ med.pharmacy.id }}
+                  </div>
+                </div>
+
+                <div class="pharmacy-address">
+                  📍 {{ med.pharmacy.address|default:"Address not provided" }}
+                </div>
+
+                <div class="price-stock-row">
+                  <span class="price-tag">₹{{ med.price }}</span>
+                  <span class="qty-text">
+                    {% if med.quantity > 0 %}
+                      {% if med.quantity <= 5 %}
+                        <span class="low-stock">Low stock</span> • {{ med.quantity }}
+                      {% else %}
+                        <span class="in-stock">In stock</span> • {{ med.quantity }}
+                      {% endif %}
+                    {% else %}
+                      <span class="out-stock">Out of stock</span>
+                    {% endif %}
+                  </span>
+                </div>
+
+                <div class="pay-pill-row">
+                  <span class="pay-pill">💵 COD</span>
+                  {% if med.pharmacy.upi_id or med.pharmacy.upi_qr %}
+                    <span class="pay-pill upi">📱 UPI available</span>
+                  {% else %}
+                    <span class="pay-pill">UPI not provided</span>
+                  {% endif %}
+                </div>
+
+                <div class="card-footer-note">
+                  Orders are handled directly by {{ med.pharmacy.pharmacy_name }}.
+                </div>
+
+                {% if med.quantity > 0 %}
+                  <!-- Buy button (shows form) -->
+                  <button type="button"
+                          class="btn btn-success btn-sm buy-btn mt-2 toggle-order-btn"
+                          data-med-id="{{ med.id }}">
+                    🛒 Buy
+                  </button>
+
+                  <!-- Hidden order form -->
+                  <div class="order-form" id="order-form-{{ med.id }}">
+                    <form method="POST" action="{% url 'place_order' med.id %}">
+                      {% csrf_token %}
+                      <div class="mb-2 mt-2">
+                        <label class="form-label mb-1" style="font-size:0.8rem;">Quantity</label>
+                        <input type="number"
+                               name="quantity"
+                               class="form-control form-control-sm"
+                               value="1"
+                               min="1"
+                               max="{{ med.quantity }}">
+                      </div>
+
+                      <div class="mb-2">
+                        <label class="form-label mb-1" style="font-size:0.8rem;">Payment Method</label>
+                        <div class="d-flex flex-column gap-1">
+                          <label class="payment-option-label">
+                            <input type="radio" name="payment_method" value="COD" checked>
+                            💵 Cash on Delivery
+                          </label>
+                          <label class="payment-option-label">
+                            <input type="radio" name="payment_method" value="UPI">
+                            📱 UPI
+                            {% if med.pharmacy.upi_id %}
+                              <span class="text-muted">({{ med.pharmacy.upi_id }})</span>
+                            {% else %}
+                              <span class="text-muted">(UPI not provided)</span>
+                            {% endif %}
+                          </label>
+                        </div>
+                      </div>
+
+                      {% if med.pharmacy.upi_qr %}
+                        <div class="mb-2 text-center">
+                          <small class="text-muted d-block" style="font-size:0.78rem;">Scan to pay via UPI</small>
+                          <img src="{{ med.pharmacy.upi_qr.url }}" alt="UPI QR" class="upi-qr-img">
+                        </div>
+                      {% endif %}
+
+                      <div class="d-flex justify-content-between align-items-center mt-2">
+                        <span class="cancel-order-link" data-med-id="{{ med.id }}">
+                          Cancel
+                        </span>
+                        <button type="submit" class="btn btn-success btn-sm buy-btn">
+                          ✅ Place Order
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                {% else %}
+                  <button class="btn btn-secondary btn-sm buy-btn mt-2" disabled>
+                    ❌ Out of Stock
+                  </button>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="alert alert-info mt-4 text-center pharmacy-empty">
+          No medicines available yet. Please check again later.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  // Show order form when "Buy" clicked
+  document.querySelectorAll(".toggle-order-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const medId = btn.getAttribute("data-med-id");
+      const formWrapper = document.getElementById(`order-form-${medId}`);
+      if (formWrapper) {
+        formWrapper.classList.add("show");
+        btn.style.display = "none";
+      }
+    });
+  });
+
+  // Hide order form when "Cancel" clicked
+  document.querySelectorAll(".cancel-order-link").forEach(link => {
+    link.addEventListener("click", () => {
+      const medId = link.getAttribute("data-med-id");
+      const formWrapper = document.getElementById(`order-form-${medId}`);
+      const buyBtn = document.querySelector(
+        `.toggle-order-btn[data-med-id="${medId}"]`
+      );
+      if (formWrapper) {
+        formWrapper.classList.remove("show");
+      }
+      if (buyBtn) {
+        buyBtn.style.display = "block";
+      }
+    });
+  });
+
+  // Client-side search filter
+  const searchInput = document.getElementById("medSearch");
+  const grid = document.getElementById("pharmacyGrid");
+
+  if (searchInput && grid) {
+    searchInput.addEventListener("input", () => {
+      const q = searchInput.value.trim().toLowerCase();
+      const cards = grid.querySelectorAll(".pharmacy-card-col");
+
+      cards.forEach(col => {
+        const text = col.innerText.toLowerCase();
+        col.style.display = text.includes(q) ? "" : "none";
+      });
+    });
+  }
+});
+</script>
+
+{% endblock %}

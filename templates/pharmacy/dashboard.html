@@ -1,0 +1,542 @@
+{% extends 'base.html' %}
+{% block title %}Pharmacy Dashboard{% endblock %}
+{% block content %}
+
+<style>
+body {
+  background: radial-gradient(circle at top left, #e0f7fa 0%, #f9fafb 40%, #e0e7ff 85%);
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow-x: hidden;
+}
+
+/* PAGE SHELL */
+.pharmacy-page {
+  min-height: calc(100vh - 80px);
+  padding: 32px 10px 40px;
+}
+
+.pharmacy-shell {
+  max-width: 1160px;
+  margin: 0 auto;
+  background: rgba(255,255,255,0.97);
+  border-radius: 24px;
+  box-shadow: 0 22px 55px rgba(15,23,42,0.18);
+  border: 1px solid rgba(226,232,240,0.9);
+  backdrop-filter: blur(18px);
+  padding: 22px 22px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.pharmacy-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(59,130,246,0.18), transparent 60%);
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.pharmacy-inner {
+  position: relative;
+  z-index: 1;
+}
+
+/* FLOATING LOGOUT */
+.logout-btn {
+  position: fixed;
+  top: 90px;
+  right: 26px;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  color: white;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  box-shadow: 0 10px 30px rgba(248, 113, 113, 0.55);
+  backdrop-filter: blur(12px);
+  border: none;
+  transition: all 0.25s ease;
+}
+.logout-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  background: linear-gradient(135deg, #dc2626, #7f1d1d);
+  box-shadow: 0 12px 34px rgba(239, 68, 68, 0.65);
+}
+
+/* HEADER / PROFILE */
+.profile-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: stretch;
+  margin-bottom: 18px;
+}
+
+/* left: profile card */
+.profile-card {
+  flex: 1.4;
+  background: linear-gradient(135deg, #eff6ff, #e0f2fe);
+  border-radius: 20px;
+  box-shadow: 0 12px 32px rgba(15,23,42,0.14);
+  padding: 18px 18px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.profile-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  background: #1d4ed8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #eff6ff;
+  font-weight: 800;
+  font-size: 1.25rem;
+  box-shadow: 0 10px 26px rgba(37,99,235,0.5);
+}
+
+.profile-info h3 {
+  margin: 0;
+  color: #0f172a;
+  font-weight: 800;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.profile-info h3 span.icon {
+  font-size: 1.4rem;
+}
+
+.profile-info p {
+  margin: 2px 0;
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.profile-tags {
+  margin-top: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.profile-tag-pill {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(37,99,235,0.09);
+  color: #1d4ed8;
+  border: 1px solid rgba(129,140,248,0.6);
+}
+
+/* right: quick stats */
+.quick-stats {
+  flex: 1;
+  min-width: 220px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.stat-card {
+  background: rgba(255,255,255,0.96);
+  border-radius: 16px;
+  padding: 10px 12px;
+  box-shadow: 0 8px 24px rgba(15,23,42,0.12);
+  border: 1px solid rgba(226,232,240,0.9);
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  color: #6b7280;
+}
+
+.stat-value {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* SECTIONS / CARDS */
+.section-card {
+  background: rgba(255,255,255,0.98);
+  border-radius: 18px;
+  box-shadow: 0 12px 30px rgba(15,23,42,0.12);
+  padding: 16px 16px 14px;
+  margin-bottom: 18px;
+}
+
+.section-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.section-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.section-sub {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* Add medicine form */
+.medicine-form .form-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.medicine-form input[type="text"],
+.medicine-form input[type="number"],
+.medicine-form input[type="file"] {
+  border-radius: 999px;
+  font-size: 0.9rem;
+}
+
+.medicine-form input[type="file"] {
+  border-radius: 12px;
+}
+
+.medicine-form .btn-primary {
+  border-radius: 999px;
+  padding: 8px 22px;
+  font-weight: 600;
+}
+
+/* Tables */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 4px;
+}
+
+.table {
+  margin-bottom: 0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.table thead {
+  background: #1d4ed8;
+  color: #ffffff;
+}
+.table thead th {
+  border-bottom: none;
+  font-size: 0.85rem;
+}
+.table tbody tr {
+  font-size: 0.88rem;
+}
+.table tbody tr:hover {
+  background: #eff6ff;
+}
+
+/* badges + status */
+.badge-status {
+  font-size: 0.7rem;
+}
+
+/* order status control */
+.order-status-form {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.order-status-form select {
+  min-width: 130px;
+}
+
+.order-locked {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+/* Responsive tweaks */
+@media (max-width: 992px) {
+  .pharmacy-shell {
+    padding: 18px 14px 16px;
+  }
+  .logout-btn {
+    top: 82px;
+    right: 16px;
+    padding: 7px 13px;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-row {
+    flex-direction: column;
+  }
+  .quick-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 576px) {
+  .logout-btn {
+    font-size: 0.78rem;
+    right: 10px;
+  }
+}
+</style>
+
+<!-- Floating Logout -->
+<a href="{% url 'logout' %}" class="logout-btn">
+  🔒 Logout
+</a>
+
+<div class="pharmacy-page">
+  <div class="pharmacy-shell">
+    <div class="pharmacy-inner">
+
+      <!-- HEADER / PROFILE + STATS -->
+      <div class="profile-row">
+        <!-- Profile -->
+        <div class="profile-card">
+          <div class="profile-avatar">
+            {{ profile.pharmacy_name|slice:":1"|upper }}
+          </div>
+          <div class="profile-info">
+            <h3>
+              <span class="icon">🏪</span>
+              <span>{{ profile.pharmacy_name }}</span>
+            </h3>
+            <p><strong>Owner:</strong> {{ request.user.username }}</p>
+            <p><strong>Address:</strong> {{ profile.address }}</p>
+
+            <div class="profile-tags">
+              <span class="profile-tag-pill">Online Pharmacy</span>
+              <span class="profile-tag-pill">Orders & Inventory in sync</span>
+            </div>
+
+            {# ✏️ Edit store details button added here #}
+            <a href="{% url 'edit_pharmacy_profile' %}" class="btn btn-sm btn-outline-warning mt-2">
+              ✏️ Edit Store Details
+            </a>
+          </div>
+        </div>
+
+        <!-- Quick stats (simple, no extra queries – just derived) -->
+        <div class="quick-stats">
+          <div class="stat-card">
+            <div class="stat-label">Total Medicines</div>
+            <div class="stat-value">
+              {{ medicines|length }}
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Orders</div>
+            <div class="stat-value">
+              {{ orders|length }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADD MEDICINE -->
+      <div class="section-card">
+        <div class="section-header">
+          <div>
+            <h5 class="section-title">➕ Add Medicine</h5>
+            <div class="section-sub">
+              Keep your stock updated so patients always see the latest availability.
+            </div>
+          </div>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" class="medicine-form row g-3">
+          {% csrf_token %}
+          <div class="col-md-4">
+            <label class="form-label">Medicine Name</label>
+            <input type="text" name="name" class="form-control" required>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Quantity</label>
+            <input type="number" name="quantity" min="0" class="form-control" required>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Price (₹)</label>
+            <input type="number" name="price" step="0.01" min="0" class="form-control" required>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Image (optional)</label>
+            <input type="file" name="image" class="form-control">
+          </div>
+          <div class="col-12 text-end">
+            <button type="submit" class="btn btn-primary px-4">
+              Save Medicine
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- MEDICINE LIST -->
+      <div class="section-card">
+        <div class="section-header">
+          <div>
+            <h5 class="section-title">💊 Your Medicines</h5>
+            <div class="section-sub">
+              Overview of all medicines currently visible in the marketplace.
+            </div>
+          </div>
+        </div>
+
+        {% if medicines %}
+          <div class="table-wrapper">
+            <table class="table table-striped text-center align-middle">
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Name</th>
+                  <th>Quantity</th>
+                  <th>Price (₹)</th>
+                  <th>Added On</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for med in medicines %}
+                <tr>
+                  <td>
+                    {% if med.image %}
+                      <img src="{{ med.image.url }}" alt="{{ med.name }}"
+                           style="width:50px;height:50px;object-fit:cover;border-radius:8px;">
+                    {% else %}
+                      <span class="text-muted">No image</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ med.name }}</td>
+                  <td>{{ med.quantity }}</td>
+                  <td>{{ med.price }}</td>
+                  <td>{{ med.created_at|date:"Y-m-d H:i" }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p class="text-muted mb-0">No medicines added yet.</p>
+        {% endif %}
+      </div>
+
+      <!-- MEDICINE ORDERS -->
+      <div class="section-card">
+        <div class="section-header">
+          <div>
+            <h5 class="section-title">📦 Medicine Orders</h5>
+            <div class="section-sub">
+              Update the status as orders move from accepted to delivered.
+            </div>
+          </div>
+          <div class="text-muted small">
+            Status changes are locked after patient confirmation.
+          </div>
+        </div>
+
+        {% if orders %}
+          <div class="table-wrapper">
+            <table class="table table-striped text-center align-middle">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Patient</th>
+                  <th>Medicine</th>
+                  <th>Qty</th>
+                  <th>Total (₹)</th>
+                  <th>Payment</th>
+                  <th>Status</th>
+                  <th>Last Update</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for order in orders %}
+                <tr>
+                  <td>#{{ order.id }}</td>
+                  <td>{{ order.patient.username }}</td>
+                  <td>{{ order.medicine.name }}</td>
+                  <td>{{ order.quantity }}</td>
+                  <td>{{ order.total_price }}</td>
+                  <td>{{ order.get_payment_method_display|default:order.payment_method }}</td>
+                  <td>
+                    {% if order.status == 'PENDING' %}
+                      <span class="badge bg-secondary badge-status">Pending</span>
+                    {% elif order.status == 'ACCEPTED' %}
+                      <span class="badge bg-info text-dark badge-status">Accepted</span>
+                    {% elif order.status == 'OUT_FOR_DELIVERY' %}
+                      <span class="badge bg-warning text-dark badge-status">Out for delivery</span>
+                    {% elif order.status == 'DELIVERED' %}
+                      <span class="badge bg-success badge-status">Delivered (awaiting patient)</span>
+                    {% elif order.status == 'COMPLETED' %}
+                      <span class="badge bg-primary badge-status">Completed</span>
+                    {% elif order.status == 'CANCELLED' %}
+                      <span class="badge bg-danger badge-status">Cancelled</span>
+                    {% else %}
+                      <span class="badge bg-light text-dark badge-status">{{ order.status }}</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ order.updated_at|date:"Y-m-d H:i" }}</td>
+                  <td>
+                    {% if order.patient_confirmed or order.status == "COMPLETED" or order.status == "CANCELLED" %}
+                      <div class="order-locked">
+                        <span class="badge bg-success">Locked</span>
+                        <span class="text-muted">Patient confirmed / closed</span>
+                      </div>
+                    {% else %}
+                      <form method="POST"
+                            action="{% url 'update_order_status' order.id %}"
+                            class="order-status-form">
+                        {% csrf_token %}
+                        <select name="new_status" class="form-select form-select-sm">
+                          <option value="PENDING" {% if order.status == 'PENDING' %}selected{% endif %}>Pending</option>
+                          <option value="ACCEPTED" {% if order.status == 'ACCEPTED' %}selected{% endif %}>Accepted</option>
+                          <option value="OUT_FOR_DELIVERY" {% if order.status == 'OUT_FOR_DELIVERY' %}selected{% endif %}>Out for delivery</option>
+                          <option value="DELIVERED" {% if order.status == 'DELIVERED' %}selected{% endif %}>Delivered</option>
+                          <option value="CANCELLED" {% if order.status == 'CANCELLED' %}selected{% endif %}>Cancelled</option>
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-outline-primary">
+                          Update
+                        </button>
+                      </form>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p class="text-muted mb-0">No orders yet.</p>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

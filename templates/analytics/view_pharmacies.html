@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}All Pharmacies{% endblock %}
+{% block content %}
+<style>
+.table-container {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  animation: fadeUp 0.7s ease;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<div class="container mt-5">
+  <div class="table-container">
+    <h3 class="mb-4 fw-bold text-success text-center">🏪 All Registered Pharmacies</h3>
+
+    {% if pharmacies %}
+      <table class="table table-striped text-center align-middle">
+        <thead class="table-success">
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Store Name</th>
+            <th>Address</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for pharmacy in pharmacies %}
+            <tr>
+              <td>{{ pharmacy.username }}</td>
+              <td>{{ pharmacy.email }}</td>
+              <td>{{ pharmacy.pharmacyprofile.store_name|default:"—" }}</td>
+              <td>{{ pharmacy.pharmacyprofile.address|default:"—" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="text-center text-muted">No pharmacies registered yet.</p>
+    {% endif %}
+
+    <div class="text-center mt-4">
+      <a href="{% url 'admin_analytics_dashboard' %}" class="btn btn-outline-success">← Back to Dashboard</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

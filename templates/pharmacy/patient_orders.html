@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+{% block title %}My Medicine Orders{% endblock %}
+{% block content %}
+
+<style>
+  body {
+    background: radial-gradient(circle at top left, #e0f7fa 0%, #f9fafb 40%, #e0e7ff 85%);
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  .orders-page {
+    min-height: calc(100vh - 80px);
+    padding: 28px 0 40px;
+  }
+
+  .orders-shell {
+    max-width: 1100px;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.97);
+    border-radius: 22px;
+    box-shadow: 0 18px 46px rgba(15,23,42,0.18);
+    border: 1px solid rgba(226,232,240,0.9);
+    backdrop-filter: blur(16px);
+    padding: 18px 20px 20px;
+  }
+
+  .orders-header {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .orders-title-wrap h3 {
+    margin: 0;
+    font-weight: 800;
+    color: #0f172a;
+    font-size: 1.35rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .orders-title-wrap h3 span.icon {
+    font-size: 1.5rem;
+  }
+
+  .orders-subtitle {
+    margin: 2px 0 0;
+    font-size: 0.86rem;
+    color: #6b7280;
+  }
+
+  .orders-header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .orders-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    background: rgba(34,197,94,0.08);
+    color: #166534;
+    border: 1px solid rgba(74,222,128,0.5);
+  }
+
+  .orders-back-btn {
+    border-radius: 999px;
+    font-size: 0.8rem;
+    padding: 7px 12px;
+    font-weight: 600;
+  }
+
+  .table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 8px;
+  }
+
+  table.orders-table {
+    min-width: 800px;
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 0;
+  }
+
+  table.orders-table thead {
+    background: linear-gradient(120deg, #22c55e, #16a34a);
+    color: #f9fafb;
+  }
+
+  table.orders-table thead th {
+    border-bottom: none;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  table.orders-table tbody tr:nth-child(even) {
+    background-color: #f9fafb;
+  }
+
+  table.orders-table tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+  }
+
+  table.orders-table tbody td {
+    font-size: 0.9rem;
+    vertical-align: middle;
+  }
+
+  .order-id {
+    font-weight: 600;
+    color: #4b5563;
+  }
+
+  .status-badge {
+    font-size: 0.78rem;
+    padding: 4px 8px;
+    border-radius: 999px;
+  }
+
+  .status-pending { background:#fbbf24; color:#1f2933; }
+  .status-accepted { background:#38bdf8; color:#0f172a; }
+  .status-ofd { background:#3b82f6; color:#eff6ff; }
+  .status-delivered { background:#22c55e; color:#ecfdf5; }
+  .status-completed { background:#16a34a; color:#ecfdf5; }
+  .status-cancelled { background:#9ca3af; color:#111827; }
+  .status-default { background:#e5e7eb; color:#374151; }
+
+  .confirm-btn {
+    border-radius: 999px;
+    font-size: 0.8rem;
+    padding: 5px 10px;
+  }
+
+  .table-footer-note {
+    margin-top: 6px;
+    font-size: 0.78rem;
+    color: #6b7280;
+  }
+
+  @media (max-width: 576px) {
+    .orders-shell {
+      padding: 16px 12px 18px;
+      border-radius: 20px;
+    }
+  }
+</style>
+
+<div class="orders-page">
+  <div class="orders-shell">
+    <div class="orders-header">
+      <div class="orders-title-wrap">
+        <h3>
+          <span class="icon">📦</span>
+          <span>My Medicine Orders</span>
+        </h3>
+        <p class="orders-subtitle">
+          Track your pharmacy orders, payment methods, and delivery status.
+        </p>
+      </div>
+      <div class="orders-header-actions">
+        {% if orders %}
+          <div class="orders-chip">
+            Orders: {{ orders|length }}
+          </div>
+        {% endif %}
+        <a href="{% url 'patient_dashboard' %}" class="btn btn-outline-secondary btn-sm orders-back-btn">
+          ← Back to Dashboard
+        </a>
+      </div>
+    </div>
+
+    {% if orders %}
+      <div class="table-wrapper">
+        <table class="table table-striped text-center align-middle orders-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Medicine</th>
+              <th>Pharmacy</th>
+              <th>Qty</th>
+              <th>Total</th>
+              <th>Payment</th>
+              <th>Status</th>
+              <th>Confirm</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for o in orders %}
+            <tr>
+              <td class="order-id">#{{ o.id }}</td>
+              <td>{{ o.medicine.name }}</td>
+              <td>{{ o.pharmacy.pharmacy_name }}</td>
+              <td>{{ o.quantity }}</td>
+              <td>₹{{ o.total_price }}</td>
+              <td>{{ o.get_payment_method_display }}</td>
+              <td>
+                {% if o.status == "PENDING" %}
+                  <span class="status-badge status-pending">Pending</span>
+                {% elif o.status == "ACCEPTED" %}
+                  <span class="status-badge status-accepted">Accepted</span>
+                {% elif o.status == "OUT_FOR_DELIVERY" %}
+                  <span class="status-badge status-ofd">Out for delivery</span>
+                {% elif o.status == "DELIVERED" and not o.patient_confirmed %}
+                  <span class="status-badge status-delivered">Delivered (confirm below)</span>
+                {% elif o.status == "COMPLETED" %}
+                  <span class="status-badge status-completed">Completed</span>
+                {% elif o.status == "CANCELLED" %}
+                  <span class="status-badge status-cancelled">Cancelled</span>
+                {% else %}
+                  <span class="status-badge status-default">{{ o.get_status_display }}</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if o.status == "DELIVERED" and not o.patient_confirmed %}
+                  <form method="POST" action="{% url 'confirm_order_received' o.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success btn-sm confirm-btn">
+                      ✅ Confirm Received
+                    </button>
+                  </form>
+                {% elif o.status == "COMPLETED" %}
+                  <span class="text-success" style="font-size:0.85rem;">✔ Confirmed</span>
+                {% else %}
+                  <span class="text-muted" style="font-size:0.8rem;">—</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-footer-note">
+        * Once you mark an order as <strong>Confirmed</strong>, it is stored as completed in your history.
+      </div>
+    {% else %}
+      <div class="alert alert-info text-center mt-3">
+        You have no medicine orders yet.
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

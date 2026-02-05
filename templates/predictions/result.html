@@ -1,0 +1,286 @@
+{% extends 'base.html' %}
+{% load text_utils %}
+{% block title %}Prediction Result{% endblock %}
+{% block content %}
+
+<style>
+body {
+  background: radial-gradient(circle at top left, #e0f7fa 0%, #f9fafb 40%, #e5f4ff 85%);
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* PAGE LAYOUT */
+.result-page {
+  min-height: calc(100vh - 80px);
+  padding: 40px 0 48px;
+}
+
+.result-container {
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+/* MAIN CARD */
+.result-card {
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 22px;
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.16);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  backdrop-filter: blur(16px);
+  position: relative;
+  overflow: hidden;
+  animation: fadeUp 0.65s ease-out;
+}
+
+.result-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(56,189,248,0.16), transparent 60%);
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+.result-card-body {
+  position: relative;
+  z-index: 1;
+  padding: 22px 24px 20px;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* HEADER */
+.result-header {
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.result-header-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #0f766e;
+  margin-bottom: 4px;
+}
+
+.result-header-sub {
+  font-size: 0.88rem;
+  color: #6b7280;
+}
+
+/* PREDICTION SUMMARY */
+.result-summary {
+  border-radius: 16px;
+  padding: 16px 16px 14px;
+  margin-bottom: 18px;
+  background: linear-gradient(90deg, rgba(187,247,208,0.9), rgba(219,234,254,0.9));
+  border: 1px solid rgba(74,222,128,0.6);
+}
+
+.result-summary h4 {
+  margin: 0 0 6px 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #166534;
+}
+
+.result-summary .predicted-name {
+  font-size: 1.05rem;
+  color: #022c22;
+}
+
+.result-summary .confidence {
+  font-size: 0.9rem;
+  color: #111827;
+}
+
+/* SYMPTOMS LIST */
+.result-symptoms-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+
+.result-symptom-list {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 16px;
+}
+
+.result-symptom-list .list-group-item {
+  font-size: 0.9rem;
+  padding: 8px 12px;
+}
+
+/* CONTENT COLUMNS */
+.result-sections-row {
+  margin-top: 6px;
+}
+
+.result-section-block h5 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f766e;
+  margin-top: 6px;
+  margin-bottom: 4px;
+}
+
+.result-section-block ul {
+  padding-left: 1.1rem;
+  margin-bottom: 10px;
+}
+
+.result-section-block li {
+  font-size: 0.88rem;
+  color: #374151;
+  margin-bottom: 3px;
+}
+
+/* ACTIONS */
+.result-actions {
+  margin-top: 22px;
+}
+
+.result-actions .btn-outline-primary {
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 8px 18px;
+}
+
+.result-actions .btn-secondary {
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 8px 18px;
+}
+
+/* DISCLAIMER */
+.result-disclaimer {
+  margin-top: 18px;
+  border-radius: 16px;
+  background-color: #f9fafb;
+  border: 1px dashed #e5e7eb;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .result-card-body {
+    padding: 18px 16px 16px;
+  }
+}
+</style>
+
+<div class="result-page">
+  <div class="container result-container">
+
+    <div class="card result-card shadow-none border-0">
+      <div class="card-body result-card-body">
+        <!-- Header -->
+        <div class="result-header">
+          <div class="result-header-title">🧠 Prediction Result</div>
+          <div class="result-header-sub">
+            Based on your selected symptoms, here’s what our AI suggests.
+          </div>
+        </div>
+
+        <!-- Prediction summary -->
+        <div class="result-summary text-center">
+          <h4>
+            <strong>Disease Predicted:</strong>
+            <span class="predicted-name">{{ predicted }}</span>
+          </h4>
+          {% if confidence %}
+            <p class="mb-0 confidence">
+              Confidence: <strong>{{ confidence }}%</strong>
+            </p>
+          {% endif %}
+        </div>
+
+        <!-- Selected symptoms -->
+        <h5 class="result-symptoms-title">🩹 Symptoms You Selected</h5>
+        <div class="result-symptom-list">
+          <ul class="list-group list-group-flush mb-0">
+            {% for s in selected_symptoms %}
+              <li class="list-group-item">
+                {{ s|underscore_to_space|capfirst }}
+              </li>
+            {% empty %}
+              <li class="list-group-item">
+                No symptoms selected
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <hr>
+
+        <!-- Details: causes / prevention / dos / donts / home remedies -->
+        <div class="row result-sections-row">
+          <div class="col-md-6 result-section-block">
+            <h5>🔍 Causes</h5>
+            <ul>
+              {% for item in info.causes %}
+                <li>{{ item }}</li>
+              {% endfor %}
+            </ul>
+
+            <h5>🛡️ Prevention</h5>
+            <ul>
+              {% for item in info.prevention %}
+                <li>{{ item }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+
+          <div class="col-md-6 result-section-block">
+            <h5>✅ Do’s</h5>
+            <ul>
+              {% for item in info.dos %}
+                <li>{{ item }}</li>
+              {% endfor %}
+            </ul>
+
+            <h5>❌ Don’ts</h5>
+            <ul>
+              {% for item in info.donts %}
+                <li>{{ item }}</li>
+              {% endfor %}
+            </ul>
+
+            <h5>🏡 Home Remedies</h5>
+            <ul>
+              {% for item in info.home_remedies %}
+                <li>{{ item }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="text-center result-actions">
+          <a href="{% url 'predict_disease' %}" class="btn btn-outline-primary">
+            🔁 Try Another Prediction
+          </a>
+          <a href="{% url 'patient_dashboard' %}" class="btn btn-secondary ms-2">
+            🏠 Back to Dashboard
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert result-disclaimer mt-3 mb-0">
+      ⚕️ <strong>Disclaimer:</strong>
+      This AI prediction is for informational and educational purposes only and should not replace
+      professional medical diagnosis or treatment. If symptoms persist or worsen, consult a licensed physician.
+    </div>
+  </div>
+</div>
+
+{% endblock %}

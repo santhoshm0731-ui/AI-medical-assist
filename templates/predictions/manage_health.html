@@ -1,0 +1,413 @@
+{% extends 'base.html' %}
+{% block title %}Manage Your Health{% endblock %}
+{% block content %}
+
+<style>
+body {
+  background: radial-gradient(circle at top left, #e0f7fa 0%, #f9fafb 40%, #e0f2fe 85%);
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* PAGE LAYOUT */
+.health-page {
+  min-height: calc(100vh - 80px);
+  padding: 40px 0 48px;
+}
+
+.health-container {
+  max-width: 960px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(16px);
+  border-radius: 22px;
+  box-shadow: 0 18px 44px rgba(15,23,42,0.14);
+  padding: 26px 26px 24px;
+  animation: fadeUp 0.7s ease;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  position: relative;
+  overflow: hidden;
+}
+
+.health-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(56,189,248,0.16), transparent 60%);
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.health-inner {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(25px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* HEADER */
+.health-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.health-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.health-container h2 {
+  color: #0f766e;
+  font-weight: 800;
+  font-size: 1.45rem;
+  margin: 0;
+}
+
+.health-subtitle {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.health-anim {
+  width: 160px;
+  height: 160px;
+  margin-left: auto;
+}
+
+/* SECTION TITLE */
+.section-title {
+  margin-top: 20px;
+  margin-bottom: 8px;
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+/* FORM */
+.health-form {
+  margin-top: 4px;
+}
+
+.health-form .health-label {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.health-form .health-input {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 12px;
+  border: 1px solid #cbd5e1;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  background-color: rgba(248,250,252,0.98);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+  box-shadow: none;
+}
+
+.health-form .health-input:focus {
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+  background-color: #ffffff;
+}
+
+.analyze-btn {
+  margin-top: 6px;
+  background: linear-gradient(135deg, #0ea5e9, #0284c7);
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 9px 24px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.analyze-btn:hover {
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(37, 99, 235, 0.35);
+  filter: brightness(1.02);
+}
+
+/* RESULT CARD */
+.result-card {
+  background: linear-gradient(145deg, #f9fafb, #e0f7fa);
+  border-radius: 18px;
+  box-shadow: 0 6px 20px rgba(15,23,42,0.07);
+  padding: 20px 18px 18px;
+  margin-top: 26px;
+  text-align: center;
+}
+
+.result-card h3 {
+  color: #0f766e;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+}
+
+.status {
+  font-size: 0.98rem;
+  font-weight: 600;
+  margin-bottom: 0;
+}
+
+.status.normal { color: #16a34a; }
+.status.underweight { color: #0284c7; }
+.status.overweight { color: #f59e0b; }
+.status.obese { color: #dc2626; }
+
+/* CHART */
+#healthChart {
+  margin-top: 24px;
+  width: 100%;
+  height: 300px;
+}
+
+/* TIPS */
+.tips-container {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+}
+
+.tip-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 14px 14px 12px;
+  box-shadow: 0 4px 12px rgba(15,23,42,0.06);
+  transition: all 0.22s ease;
+}
+
+.tip-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(15,23,42,0.12);
+}
+
+.tip-card h6 {
+  color: #0f766e;
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-size: 0.94rem;
+}
+
+.tip-card p {
+  font-size: 0.85rem;
+  color: #4b5563;
+  margin-bottom: 0;
+}
+
+/* DOWNLOAD & BACK */
+.download-btn {
+  margin-top: 18px;
+  background-color: #16a34a;
+  color: white;
+  border-radius: 999px;
+  padding: 9px 22px;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.download-btn:hover {
+  background-color: #15803d;
+}
+
+.back-btn {
+  display: inline-block;
+  margin-top: 22px;
+  background-color: #0f766e;
+  color: white;
+  border-radius: 999px;
+  padding: 9px 22px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.back-btn:hover {
+  background-color: #0b615a;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .health-container {
+    padding: 20px 16px 18px;
+  }
+
+  .health-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .health-anim {
+    margin: 8px auto 0;
+  }
+}
+</style>
+
+<div class="health-page">
+  <div class="container health-container">
+    <div class="health-inner">
+      <!-- Header -->
+      <div class="health-header">
+        <div class="health-title-wrap">
+          <h2>💪 Manage Your Health</h2>
+          <p class="health-subtitle">
+            Track your vitals and monitor your BMI to stay on top of your health.
+          </p>
+        </div>
+        <div class="health-anim" id="healthAnim"></div>
+      </div>
+
+      <!-- BMI & Vitals Form -->
+      <h4 class="section-title">📊 Enter Your Health Details</h4>
+      <form method="POST" class="health-form">
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-md-6 mb-2">
+            <label class="health-label">Weight (kg)</label>
+            <input type="number" name="weight" step="0.1" class="health-input" required placeholder="e.g. 72.5">
+          </div>
+          <div class="col-md-6 mb-2">
+            <label class="health-label">Height (cm)</label>
+            <input type="number" name="height" step="0.1" class="health-input" required placeholder="e.g. 170">
+          </div>
+          <div class="col-md-6 mb-2">
+            <label class="health-label">Blood Pressure (mmHg)</label>
+            <input type="number" name="bp" step="0.1" class="health-input" placeholder="e.g. 120">
+          </div>
+          <div class="col-md-6 mb-2">
+            <label class="health-label">Sugar Level (mg/dL)</label>
+            <input type="number" name="sugar" step="0.1" class="health-input" placeholder="e.g. 95">
+          </div>
+          <div class="col-md-6 mb-2">
+            <label class="health-label">Heart Rate (bpm)</label>
+            <input type="number" name="heartrate" step="1" class="health-input" placeholder="e.g. 75">
+          </div>
+          <div class="col-md-6 mb-2">
+            <label class="health-label">Oxygen Level (%)</label>
+            <input type="number" name="oxygen" step="1" class="health-input" placeholder="e.g. 98">
+          </div>
+        </div>
+        <button type="submit" class="analyze-btn">
+          Analyze Health
+        </button>
+      </form>
+
+      {% if bmi %}
+      <!-- Result Card -->
+      <div class="result-card">
+        <h3>Your BMI: {{ bmi }}</h3>
+        {% if bmi < 18.5 %}
+          <p class="status underweight">
+            Underweight 🦴 — Increase your calorie intake and focus on protein-rich foods.
+          </p>
+        {% elif bmi >= 18.5 and bmi < 25 %}
+          <p class="status normal">
+            Normal ✅ — Excellent! Maintain regular exercise and balanced nutrition.
+          </p>
+        {% elif bmi >= 25 and bmi < 30 %}
+          <p class="status overweight">
+            Overweight ⚠️ — Consider a moderate workout routine and portion control.
+          </p>
+        {% else %}
+          <p class="status obese">
+            Obese 🚨 — High risk; consult your doctor for a safe weight management plan.
+          </p>
+        {% endif %}
+      </div>
+
+      <!-- Graph Section -->
+      <canvas id="healthChart"></canvas>
+
+      <!-- Health Tips -->
+      <h4 class="section-title">🩺 Personalized Health Tips</h4>
+      <div class="tips-container">
+        <div class="tip-card">
+          <h6>💧 Stay Hydrated</h6>
+          <p>Drink at least 2–3 liters of water daily to keep your metabolism active.</p>
+        </div>
+        <div class="tip-card">
+          <h6>🏃 Regular Activity</h6>
+          <p>Engage in at least 30 minutes of exercise, 5 days a week.</p>
+        </div>
+        <div class="tip-card">
+          <h6>🥗 Eat Smart</h6>
+          <p>Include leafy greens, proteins, and complex carbs. Avoid sugary foods.</p>
+        </div>
+        <div class="tip-card">
+          <h6>🧘 Mental Wellness</h6>
+          <p>Try deep breathing, meditation, or yoga to reduce stress and anxiety.</p>
+        </div>
+      </div>
+
+      <button class="download-btn" onclick="window.print()">
+        ⬇️ Download Health Report
+      </button>
+      {% endif %}
+
+      <a href="{% url 'patient_dashboard' %}" class="back-btn">← Back to Dashboard</a>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://unpkg.com/lottie-web@5.9.6/build/player/lottie.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // Health animation
+  lottie.loadAnimation({
+    container: document.getElementById("healthAnim"),
+    renderer: "svg",
+    loop: true,
+    autoplay: true,
+    path: "https://assets2.lottiefiles.com/packages/lf20_7s6e8zwd.json"
+  });
+
+  // Health Chart (Mock Data)
+  const ctx = document.getElementById('healthChart');
+  if (ctx) {
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+          label: 'Weight (kg)',
+          data: [72, 71.8, 71.5, 71.2, 71.0, 70.9, 70.8],
+          borderColor: '#0f766e',
+          tension: 0.4,
+          fill: true,
+          backgroundColor: 'rgba(15,118,110,0.12)',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: { y: { beginAtZero: false } },
+        plugins: { legend: { display: true } }
+      }
+    });
+  }
+});
+</script>
+
+{% endblock %}

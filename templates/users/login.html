@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Login{% endblock %}
+{% block content %}
+
+<style>
+body {
+  background: radial-gradient(circle at top left, #dbeafe 0%, #eff6ff 40%, #e0f2fe 85%);
+  font-family: 'Inter', sans-serif;
+}
+
+/* Page Layout */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 90vh;
+  padding: 20px;
+}
+
+/* Login Card */
+.login-card {
+  width: 380px;
+  background: rgba(255, 255, 255, 0.96);
+  padding: 32px 30px 26px;
+  border-radius: 22px;
+  box-shadow: 0 18px 40px rgba(37, 99, 235, 0.25);
+  animation: fadeUp 0.8s ease;
+  border: 1px solid rgba(191, 219, 254, 0.9);
+  position: relative;
+  overflow: hidden;
+}
+
+.login-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at top right, rgba(59,130,246,0.16), transparent 60%);
+  opacity: 0.9;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Heading */
+.login-title {
+  text-align: center;
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: #1d4ed8;
+  margin-bottom: 12px;
+}
+
+/* Lottie container */
+#loginLottie {
+  width: 180px;
+  height: 180px;
+  margin: 0 auto 8px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Inputs */
+.form-label {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.form-control {
+  border-radius: 999px;
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  background: rgba(248,250,252,0.95);
+  font-size: 0.92rem;
+  transition: 0.2s ease;
+}
+
+.form-control:focus {
+  border-color: #2563eb;
+  background: #ffffff;
+  box-shadow: 0 0 0 2px rgba(37,99,235,0.25);
+}
+
+/* Button */
+.btn-login {
+  background: linear-gradient(120deg, #2563eb, #1d4ed8);
+  color: white;
+  border: none;
+  width: 100%;
+  padding: 11px;
+  border-radius: 999px;
+  margin-top: 10px;
+  font-weight: 700;
+  font-size: 0.96rem;
+  letter-spacing: 0.02em;
+  transition: 0.2s ease;
+}
+
+.btn-login:hover {
+  background: linear-gradient(120deg, #1d4ed8, #1e40af);
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.35);
+  transform: translateY(-1px);
+}
+
+/* Footer Links */
+.login-links {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 0.9rem;
+}
+
+.login-links a {
+  color: #1d4ed8;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 0 4px;
+}
+
+.login-links a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: 24px 18px 20px;
+  }
+}
+</style>
+
+<div class="login-container">
+  <div class="login-card">
+
+    <!-- 🔹 Lottie animation (patient / doctor) -->
+    <div id="loginLottie"></div>
+
+    <h3 class="login-title">
+      {% if role == 'patient' %}
+        Patient Login
+      {% elif role == 'doctor' %}
+        Doctor Login
+      {% else %}
+        Login
+      {% endif %}
+    </h3>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-warning text-center">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label class="form-label">Username</label>
+        <input type="text" name="username" class="form-control" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" name="password" class="form-control" required>
+      </div>
+
+      <button type="submit" class="btn-login">Login</button>
+    </form>
+
+    <div class="login-links">
+      <a href="{% url 'register_patient' %}">Register as Patient</a> |
+      <a href="{% url 'register_doctor' %}">Register as Doctor</a>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script src="https://unpkg.com/lottie-web@5.9.6/build/player/lottie.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var container = document.getElementById('loginLottie');
+      if (!container) return;
+
+      // Decide which JSON static file to use
+      var jsonPath = "";
+      {% if role == 'patient' %}
+        jsonPath = "{% static 'lottie/logip.json' %}";
+      {% elif role == 'doctor' %}
+        jsonPath = "{% static 'lottie/logind.json' %}";
+      {% else %}
+        jsonPath = "{% static 'lottie/logip.json' %}";
+      {% endif %}
+
+      console.log("Loading Lottie from:", jsonPath);
+
+      lottie.loadAnimation({
+        container: container,
+        renderer: 'svg',
+        loop: true,
+        autoplay: true,
+        path: jsonPath
+      });
+    });
+  </script>
+{% endblock %}

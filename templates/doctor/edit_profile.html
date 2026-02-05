@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Edit Doctor Profile{% endblock %}
+{% block content %}
+
+<style>
+.edit-card {
+  max-width: 500px;
+  margin: 50px auto;
+  background: rgba(255,255,255,0.95);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+</style>
+
+<div class="edit-card">
+  <h3 class="mb-3 text-success fw-bold">Edit Profile (Doctor)</h3>
+  <form method="POST">
+    {% csrf_token %}
+
+    <div class="mb-3">
+      <label class="form-label">Specialty</label>
+      <input type="text" name="specialty" class="form-control"
+             value="{{ profile.specialty|default_if_none:'' }}">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Consultation Fees (₹)</label>
+      <input type="number" name="fees" step="0.01" min="0" class="form-control"
+             value="{{ profile.fees|default_if_none:'' }}">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Clinic Address</label>
+      <textarea name="address" rows="3" class="form-control">{{ profile.address|default_if_none:'' }}</textarea>
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+      <a href="{% url 'doctor_dashboard' %}" class="btn btn-outline-secondary">← Back</a>
+      <button type="submit" class="btn btn-success">Save Changes</button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Access Denied{% endblock %}
+{% block content %}
+<style>
+.denied-container {
+  text-align: center;
+  margin-top: 80px;
+  animation: fadeIn 1s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.denied-card {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  padding: 40px;
+  border-radius: 20px;
+  max-width: 500px;
+  margin: auto;
+  box-shadow: 0 6px 30px rgba(0,0,0,0.1);
+}
+.denied-card h2 {
+  color: #e63946;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+.denied-card p {
+  color: #444;
+  font-size: 1.1rem;
+}
+</style>
+
+<div class="denied-container">
+  <div class="denied-card">
+    <div id="lockAnim" style="width: 150px; height: 150px; margin:auto;"></div>
+    <h2>🚫 Access Denied</h2>
+    <p>Only superusers can access the Admin Analytics Dashboard.</p>
+    <a href="{% url 'home' %}" class="btn btn-outline-primary mt-3">🏠 Back to Home</a>
+  </div>
+</div>
+
+<!-- Animation -->
+<script src="https://unpkg.com/lottie-web@5.9.6/build/player/lottie.min.js"></script>
+<script>
+lottie.loadAnimation({
+  container: document.getElementById('lockAnim'),
+  renderer: 'svg',
+  loop: true,
+  autoplay: true,
+  path: 'https://assets5.lottiefiles.com/packages/lf20_xlkxtmul.json'
+});
+</script>
+{% endblock %}

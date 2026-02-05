@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block title %}Pharmacy Login — AI Medical Assistant{% endblock %}
+{% block content %}
+
+<style>
+body {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f7fa 100%);
+  font-family: 'Inter', sans-serif;
+}
+.login-section {
+  display: flex;
+  flex-wrap: wrap;
+  min-height: 85vh;
+  align-items: center;
+  justify-content: center;
+}
+.left-anim { flex: 1; text-align: center; min-width: 320px; }
+.left-anim div { width: 380px; max-width: 90%; margin: auto; }
+.right-form { flex: 1; min-width: 320px; display: flex; justify-content: center; }
+.login-card {
+  background: rgba(255,255,255,0.95);
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(37,99,235,0.25);
+  padding: 35px 40px;
+  width: 360px;
+  animation: fadeInUp 0.8s ease;
+}
+@keyframes fadeInUp {
+  0% { transform: translateY(30px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+.login-card h3 { color: #1d4ed8; font-weight: 700; margin-bottom: 20px; }
+.btn-login {
+  background: linear-gradient(90deg, #3b82f6, #0ea5e9);
+  color: #fff;
+  border-radius: 30px;
+  width: 100%;
+  padding: 10px;
+  font-weight: 600;
+  transition: 0.3s;
+}
+.btn-login:hover { box-shadow: 0 0 12px rgba(37,99,235,0.4); }
+
+.btn-back {
+  display: block;
+  text-align: center;
+  margin-top: 15px;
+  color: #1d4ed8;
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.3s;
+}
+.btn-back:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+</style>
+
+<div class="container login-section">
+  <div class="left-anim">
+    <div id="pharmacyLottie"></div>
+  </div>
+
+  <div class="right-form">
+    <div class="login-card">
+      <h3 class="text-center mb-4">Pharmacy Login</h3>
+
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-warning">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+
+      <form method="POST" action="{% url 'pharmacy_login' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label">Username</label>
+          <input type="text" name="username" class="form-control" required autofocus>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <input type="password" name="password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-login mt-3">Login as Pharmacy</button>
+      </form>
+
+      <a href="{% url 'home' %}" class="btn-back">← Back to Home</a>
+
+      <p class="text-center mt-3">
+        <small class="text-muted">
+          New pharmacy? <a href="{% url 'register_pharmacy' %}">Register here</a>
+        </small>
+      </p>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/lottie-web@5.9.6/build/player/lottie.min.js"></script>
+<script>
+lottie.loadAnimation({
+  container: document.getElementById('pharmacyLottie'),
+  renderer: 'svg',
+  loop: true,
+  autoplay: true,
+  path: 'https://assets7.lottiefiles.com/packages/lf20_wd1udlcz.json'
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,549 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Patient Dashboard{% endblock %}
+{% block content %}
+
+<style>
+body {
+  background: radial-gradient(circle at top left, #e0f7fa 0%, #f9fafb 40%, #e5f4ff 85%);
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* PAGE LAYOUT */
+.dashboard-page {
+  min-height: calc(100vh - 80px);
+  padding: 32px 0 40px;
+}
+
+.dashboard-container {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+/* PROFILE CARD */
+.profile-card {
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  border-radius: 22px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+  padding: 22px 26px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  animation: fadeUp 0.7s ease;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.profile-main {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profile-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(56,189,248,0.12);
+  color: #0369a1;
+  font-size: 0.76rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.profile-info h3 {
+  color: #0f172a;
+  font-weight: 800;
+  font-size: 1.35rem;
+  margin-bottom: 2px;
+}
+
+.profile-info p {
+  color: #374151;
+  margin: 1px 0;
+  font-size: 0.92rem;
+}
+
+.profile-meta {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.profile-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 10px;
+}
+
+#patientAnim {
+  width: 160px;
+  height: 160px;
+}
+
+/* LOGOUT BUTTON */
+.logout-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  max-width: 240px;
+  margin: 0 auto 26px auto;
+  background: linear-gradient(120deg, #ef4444, #b91c1c);
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 9px 18px;
+  font-weight: 600;
+  text-align: center;
+  transition: all 0.22s ease;
+  text-decoration: none;
+  font-size: 0.92rem;
+}
+
+.logout-btn:hover {
+  background: linear-gradient(120deg, #dc2626, #991b1b);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(220, 38, 38, 0.45);
+}
+
+/* SECTION CARD WRAPPER */
+.section-card {
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.10);
+  padding: 18px 20px 20px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+}
+
+/* SECTION HEADER */
+.section-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.section-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-title-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #0f766e;
+}
+
+.section-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f766e;
+}
+
+.section-subtitle {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #6b7280;
+}
+
+/* ACTION GRID */
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 20px;
+}
+
+.action-grid a {
+  text-decoration: none;
+}
+
+.action-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 22px rgba(15, 23, 42, 0.08);
+  text-align: center;
+  padding: 18px 10px 16px;
+  min-height: 190px;
+  transition: all 0.22s ease;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.action-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top, rgba(34,197,94,0.12), transparent 55%);
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+
+.action-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.14);
+}
+
+.action-card:hover::before {
+  opacity: 1;
+}
+
+.action-card .lottie {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 6px;
+  position: relative;
+  z-index: 1;
+}
+
+.action-card-title {
+  margin-top: 4px;
+  font-weight: 600;
+  color: #0f172a;
+  font-size: 0.95rem;
+  position: relative;
+  z-index: 1;
+}
+
+.action-card-sub {
+  margin: 0;
+  margin-top: 2px;
+  font-size: 0.78rem;
+  color: #6b7280;
+  position: relative;
+  z-index: 1;
+}
+
+/* APPOINTMENTS SECTION */
+.section-actions form {
+  margin: 0;
+}
+
+.section-actions .btn {
+  font-size: 0.8rem;
+  padding: 5px 10px;
+}
+
+/* TABLE (scoped) */
+.dashboard-container .table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.dashboard-container .table {
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 0;
+  font-size: 0.88rem;
+}
+
+.dashboard-container .table thead {
+  background: #0f766e;
+  color: white;
+}
+
+.dashboard-container .table thead th {
+  border-bottom: none;
+  white-space: nowrap;
+}
+
+.dashboard-container .table tbody td {
+  vertical-align: middle;
+}
+
+.dashboard-container .table tbody tr:last-child td {
+  border-bottom-width: 0;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  margin-top: 10px;
+  color: #6b7280;
+  padding-bottom: 4px;
+}
+
+.empty-state p {
+  margin-top: 8px;
+}
+
+/* Responsive tweaks */
+@media (max-width: 992px) {
+  .dashboard-page {
+    padding-top: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-card {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    padding: 18px 16px;
+  }
+
+  .profile-main {
+    align-items: center;
+  }
+
+  #patientAnim {
+    width: 140px;
+    height: 140px;
+  }
+
+  .section-card {
+    padding: 14px 14px 16px;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-container {
+    padding: 0 4px;
+  }
+}
+</style>
+
+<div class="dashboard-page">
+  <div class="container dashboard-container">
+
+    <!-- Profile Section -->
+    <div class="profile-card">
+      <div class="profile-main">
+        <div class="profile-pill">
+          <span>Patient Dashboard</span>
+        </div>
+        <div class="profile-info">
+          <h3>{{ request.user.username }}</h3>
+          <p><strong>Email:</strong> {{ request.user.email }}</p>
+          {% if profile %}
+            <p><strong>Age:</strong> {{ profile.age }}&nbsp;&nbsp;•&nbsp;&nbsp;<strong>Gender:</strong> {{ profile.gender }}</p>
+          {% else %}
+            <p class="text-muted">No profile information available.</p>
+          {% endif %}
+        </div>
+
+        <!-- ✏️ Edit Profile button added here -->
+        <a href="{% url 'edit_patient_profile' %}" class="btn btn-sm btn-outline-primary mt-2">
+          ✏️ Edit Profile
+        </a>
+
+        <div class="profile-meta">
+          <span>Last login: {{ request.user.last_login }}</span>
+        </div>
+      </div>
+      <div id="patientAnim"></div>
+    </div>
+
+    <!-- Logout Button -->
+    <a href="{% url 'logout' %}" class="logout-btn shadow-sm">
+      <span>🔒 Logout</span>
+    </a>
+
+    <!-- Quick Actions -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <span class="section-title-dot"></span>
+          <div>
+            <h4 class="section-title">Quick Actions</h4>
+            <p class="section-subtitle">Access key tools and features in one place.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-grid">
+        <a href="{% url 'predict_disease' %}">
+          <div class="action-card">
+            <div id="predictAnim" class="lottie"></div>
+            <div class="action-card-title">Predict Disease</div>
+            <p class="action-card-sub">AI-based symptom analysis</p>
+          </div>
+        </a>
+
+        <a href="{% url 'manage_health' %}">
+          <div class="action-card">
+            <div id="healthAnim" class="lottie"></div>
+            <div class="action-card-title">Manage Health</div>
+            <p class="action-card-sub">Track conditions & notes</p>
+          </div>
+        </a>
+
+        <a href="{% url 'chatbot_home' %}">
+          <div class="action-card">
+            <div id="chatAnim" class="lottie"></div>
+            <div class="action-card-title">AI Chatbot</div>
+            <p class="action-card-sub">24/7 virtual assistant</p>
+          </div>
+        </a>
+
+        <a href="{% url 'analytics_dashboard' %}">
+          <div class="action-card">
+            <div id="analyticsAnim" class="lottie"></div>
+            <div class="action-card-title">Health Analytics</div>
+            <p class="action-card-sub">Visualize your trends</p>
+          </div>
+        </a>
+
+        <a href="{% url 'book_appointment' %}">
+          <div class="action-card">
+            <div id="bookingAnim" class="lottie"></div>
+            <div class="action-card-title">Book Appointment</div>
+            <p class="action-card-sub">Connect with doctors</p>
+          </div>
+        </a>
+
+        <a href="{% url 'pharmacy_marketplace' %}">
+          <div class="action-card">
+            <div id="pharmacyAnim" class="lottie"></div>
+            <div class="action-card-title">Pharmacy</div>
+            <p class="action-card-sub">Order medicines online</p>
+          </div>
+        </a>
+
+        <a href="{% url 'patient_orders' %}">
+          <div class="action-card">
+            <div id="ordersAnim" class="lottie"></div>
+            <div class="action-card-title">Track Orders</div>
+            <p class="action-card-sub">Monitor delivery status</p>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Appointments -->
+    <div class="section-card mt-4">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <span class="section-title-dot"></span>
+          <div>
+            <h4 class="section-title">Your Appointments</h4>
+            <p class="section-subtitle">Upcoming and past consultations with doctors.</p>
+          </div>
+        </div>
+
+        <div class="section-actions">
+          <form method="POST" action="{% url 'clear_completed_patient' %}" onsubmit="return confirm('Clear all completed, rejected, and cancelled appointments?');">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-outline-secondary">
+              🧹 Clear Completed / Rejected / Cancelled
+            </button>
+          </form>
+        </div>
+      </div>
+
+      {% if appointments %}
+        <div class="table-wrapper">
+          <table class="table table-striped text-center align-middle">
+            <thead>
+              <tr>
+                <th>Doctor</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th style="min-width: 110px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for appointment in appointments %}
+              <tr>
+                <td>{{ appointment.doctor.username }}</td>
+                <td>{{ appointment.date }}</td>
+                <td>
+                  {% if appointment.status == 'Pending' %}
+                    <span class="badge bg-warning text-dark">Pending</span>
+                  {% elif appointment.status == 'Approved' %}
+                    <span class="badge bg-success">Approved</span>
+                  {% elif appointment.status == 'Rejected' %}
+                    <span class="badge bg-danger">Rejected</span>
+                  {% elif appointment.status == 'Completed' %}
+                    <span class="badge bg-primary">Completed</span>
+                  {% elif appointment.status == 'Cancelled' %}
+                    <span class="badge bg-secondary">Cancelled</span>
+                  {% else %}
+                    <span class="badge bg-secondary">{{ appointment.status }}</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if appointment.status == 'Pending' %}
+                    <form method="POST" action="{% url 'cancel_appointment_patient' appointment.id %}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-sm btn-outline-danger">
+                        Cancel
+                      </button>
+                    </form>
+
+                  {% elif appointment.status == 'Approved' %}
+                    <a href="{% url 'chat_with_doctor' appointment.id %}" class="btn btn-sm btn-primary">
+                      💬 Chat
+                    </a>
+
+                  {% else %}
+                    <span class="text-muted">—</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <div id="emptyAnim" style="width:150px;height:150px;margin:auto;"></div>
+          <p>No appointments yet.</p>
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+
+<!-- Lottie Animations -->
+<script src="https://unpkg.com/lottie-web@5.9.6/build/player/lottie.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const animations = {
+    patientAnim: "https://assets2.lottiefiles.com/packages/lf20_tutvdkg0.json",
+    emptyAnim: "https://assets10.lottiefiles.com/packages/lf20_cg3nvh0a.json",
+    healthAnim: "{% static 'lottie/manage.json' %}",
+    chatAnim: "{% static 'lottie/chat.json' %}",
+    analyticsAnim: "{% static 'lottie/analysis.json' %}",
+    bookingAnim: "{% static 'lottie/app.json' %}",
+    pharmacyAnim: "{% static 'lottie/medi.json' %}",
+    ordersAnim: "{% static 'lottie/track.json' %}",
+    predictAnim: "{% static 'lottie/pred.json' %}",
+  };
+
+  for (const [id, path] of Object.entries(animations)) {
+    const container = document.getElementById(id);
+    if (container) {
+      lottie.loadAnimation({
+        container,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+        path
+      });
+    }
+  }
+});
+</script>
+
+{% endblock %}

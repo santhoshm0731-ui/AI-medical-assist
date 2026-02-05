@@ -1,0 +1,269 @@
+{% extends 'base.html' %}
+{% block title %}Pharmacy Registration — AI Medical Assistant{% endblock %}
+{% block content %}
+
+<style>
+body {
+  background: linear-gradient(135deg, #eef2ff, #e0f2fe);
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Page wrapper for vertical alignment with navbar */
+.register-page {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+  padding: 40px 0;
+}
+
+/* Outer container */
+.register-container {
+  width: 100%;
+}
+
+/* Card */
+.card-register {
+  background: rgba(255,255,255,0.97);
+  border-radius: 22px;
+  padding: 30px 32px 24px;
+  width: 430px;
+  max-width: 100%;
+  box-shadow: 0 18px 40px rgba(37,99,235,0.22);
+  animation: fadeUp 0.8s ease;
+  border: 1px solid rgba(191, 219, 254, 0.9);
+  position: relative;
+  overflow: hidden;
+}
+
+.card-register::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(59,130,246,0.14), transparent 60%);
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Heading */
+.card-register h3 {
+  text-align: center;
+  font-weight: 800;
+  color: #1d4ed8;
+  margin-bottom: 6px;
+  position: relative;
+  z-index: 1;
+  font-size: 1.4rem;
+}
+
+.pharmacy-subtitle {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Divider */
+.register-divider {
+  height: 1px;
+  background: linear-gradient(to right, rgba(148,163,184,0), rgba(148,163,184,0.7), rgba(148,163,184,0));
+  margin: 10px 0 16px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Messages */
+.card-register .alert {
+  border-radius: 999px;
+  font-size: 0.85rem;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Form */
+.card-register form {
+  position: relative;
+  z-index: 1;
+}
+
+.card-register .form-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+/* Scope inputs to this card only */
+.card-register .form-control,
+.card-register .form-select,
+.card-register textarea.form-control {
+  border-radius: 12px;
+  padding: 9px 12px;
+  border: 1px solid #bfdbfe;
+  font-size: 0.92rem;
+  background-color: rgba(248,250,252,0.98);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  box-shadow: none;
+}
+
+.card-register textarea.form-control {
+  resize: vertical;
+  border-radius: 14px;
+}
+
+.card-register .form-control:focus,
+.card-register .form-select:focus,
+.card-register textarea.form-control:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37,99,235,0.25);
+  background-color: #ffffff;
+}
+
+/* Spacing */
+.card-register .mb-3 {
+  margin-bottom: 0.9rem !important;
+}
+
+/* Buttons */
+.btn-register {
+  background: linear-gradient(90deg, #3b82f6, #0ea5e9);
+  border: none;
+  color: white;
+  padding: 11px 14px;
+  border-radius: 999px;
+  font-weight: 700;
+  width: 100%;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.btn-register:hover {
+  background: linear-gradient(90deg, #2563eb, #0284c7);
+  box-shadow: 0 14px 32px rgba(37,99,235,0.35);
+  transform: translateY(-1px);
+  filter: brightness(1.02);
+}
+
+.btn-register:active {
+  transform: translateY(0);
+  box-shadow: 0 8px 18px rgba(37,99,235,0.3);
+}
+
+/* Back link */
+.btn-back {
+  display: block;
+  margin-top: 12px;
+  text-align: center;
+  color: #1d4ed8;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  position: relative;
+  z-index: 1;
+}
+
+.btn-back:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+/* Helper text */
+.card-register small.text-muted {
+  font-size: 0.78rem;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .register-page {
+    padding: 30px 0;
+    min-height: auto;
+  }
+
+  .card-register {
+    padding: 22px 18px 18px;
+    border-radius: 18px;
+  }
+}
+</style>
+
+<div class="register-page">
+  <div class="register-container container">
+    <div class="row justify-content-center">
+      <div class="col-md-7 col-lg-5">
+        <div class="card-register">
+          <h3>Register as Pharmacy</h3>
+          <p class="pharmacy-subtitle">
+            Add your pharmacy to the AI Medical Assistant network and enable seamless digital orders and payments.
+          </p>
+
+          <div class="register-divider"></div>
+
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-warning">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+
+          {# enctype kept for QR image upload #}
+          <form method="post" action="{% url 'register_pharmacy' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label class="form-label">Username</label>
+              <input name="username" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input type="email" name="email" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Password</label>
+              <input type="password" name="password" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Pharmacy Name</label>
+              <input name="pharmacy_name" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Store Address</label>
+              <textarea name="address" rows="3" class="form-control" required></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">UPI ID (for payments)</label>
+              <input name="upi_id" class="form-control" placeholder="example@upi">
+              <small class="text-muted">Patients will see this if they choose UPI payment.</small>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">UPI QR Code (image)</label>
+              <input type="file" name="upi_qr" class="form-control" accept="image/*">
+              <small class="text-muted">Upload your bank UPI QR code so patients can scan & pay.</small>
+            </div>
+
+            <button type="submit" class="btn-register">Register Pharmacy</button>
+            <a href="{% url 'home' %}" class="btn-back">← Back to Home</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

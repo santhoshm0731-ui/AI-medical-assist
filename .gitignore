@@ -1,0 +1,21 @@
+# Environment
+.env
+.env.*
+
+# Python
+__pycache__/
+*.pyc
+
+# Django
+db.sqlite3
+staticfiles/
+
+# Virtual env
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+# HuggingFace / ML models
+models/

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Edit Patient Profile{% endblock %}
+{% block content %}
+
+<style>
+.edit-card {
+  max-width: 500px;
+  margin: 50px auto;
+  background: rgba(255,255,255,0.95);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+</style>
+
+<div class="edit-card">
+  <h3 class="mb-3 text-primary fw-bold">Edit Profile (Patient)</h3>
+  <form method="POST">
+    {% csrf_token %}
+
+    <div class="mb-3">
+      <label class="form-label">Email</label>
+      <input type="email" name="email" class="form-control"
+             value="{{ request.user.email }}" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Age</label>
+      <input type="number" name="age" min="0" class="form-control"
+             value="{{ profile.age|default_if_none:'' }}">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Gender</label>
+      <select name="gender" class="form-select">
+        <option value="" {% if not profile.gender %}selected{% endif %}>Select gender</option>
+        <option value="Male" {% if profile.gender == "Male" %}selected{% endif %}>Male</option>
+        <option value="Female" {% if profile.gender == "Female" %}selected{% endif %}>Female</option>
+        <option value="Other" {% if profile.gender == "Other" %}selected{% endif %}>Other</option>
+      </select>
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+      <a href="{% url 'patient_dashboard' %}" class="btn btn-outline-secondary">← Back</a>
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

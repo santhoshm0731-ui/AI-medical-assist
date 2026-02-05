@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+{% load text_utils %}
+{% block title %}Disease Prediction{% endblock %}
+{% block content %}
+
+<style>
+body {
+  background: radial-gradient(circle at top left, #e0f7fa 0%, #f9fafb 40%, #e0f2fe 80%);
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* PAGE LAYOUT */
+.prediction-page {
+  min-height: calc(100vh - 80px);
+  padding: 40px 0 48px;
+}
+
+.prediction-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* HEADER ALERT / INTRO */
+.prediction-header {
+  margin-bottom: 18px;
+}
+
+.prediction-header .alert {
+  border-radius: 16px;
+  border: 1px solid rgba(56,189,248,0.35);
+  background: linear-gradient(90deg, rgba(224,242,254,0.9), rgba(240,253,250,0.9));
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.prediction-header .alert strong {
+  font-weight: 700;
+  color: #0369a1;
+}
+
+/* MAIN CARD */
+.prediction-card {
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 22px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.16);
+  padding: 22px 22px 20px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  backdrop-filter: blur(14px);
+  position: relative;
+  overflow: hidden;
+  animation: fadeUp 0.6s ease-out;
+}
+
+.prediction-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(56,189,248,0.16), transparent 60%);
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.prediction-card-inner {
+  position: relative;
+  z-index: 1;
+}
+
+/* HEADER INSIDE CARD */
+.prediction-title {
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.prediction-title h3 {
+  font-weight: 800;
+  font-size: 1.45rem;
+  color: #0f766e;
+  margin-bottom: 4px;
+}
+
+.prediction-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(45,212,191,0.12);
+  color: #0f766e;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.prediction-subtitle {
+  font-size: 0.86rem;
+  color: #6b7280;
+  margin-bottom: 16px;
+}
+
+/* FORM STYLING (SCOPED) */
+.prediction-form .form-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.prediction-form .form-select {
+  border-radius: 999px;
+  padding: 9px 12px;
+  font-size: 0.9rem;
+  border: 1px solid #cbd5e1;
+  background-color: rgba(248,250,252,0.98);
+  box-shadow: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+
+.prediction-form .form-select:focus {
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 2px rgba(56,189,248,0.24);
+  background-color: #ffffff;
+}
+
+/* Buttons */
+.prediction-actions {
+  margin-top: 24px;
+}
+
+.prediction-actions .btn-primary {
+  background: linear-gradient(135deg, #0ea5e9, #0369a1);
+  border-radius: 999px;
+  border: none;
+  font-weight: 600;
+  font-size: 0.94rem;
+  padding: 9px 22px;
+  box-shadow: 0 10px 22px rgba(37,99,235,0.35);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+
+.prediction-actions .btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(37,99,235,0.4);
+  filter: brightness(1.02);
+}
+
+.prediction-actions .btn-outline-secondary {
+  border-radius: 999px;
+  font-size: 0.9rem;
+}
+
+/* Note area */
+.prediction-note {
+  margin-top: 18px;
+  border-radius: 14px;
+  background-color: #f9fafb;
+  border: 1px dashed #cbd5e1;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .prediction-page {
+    padding-top: 28px;
+  }
+
+  .prediction-card {
+    padding: 18px 16px 16px;
+    border-radius: 18px;
+  }
+}
+</style>
+
+<div class="prediction-page">
+  <div class="container prediction-container">
+
+    <!-- Top info alert -->
+    <div class="prediction-header">
+      <div class="alert alert-info shadow-sm mb-0">
+        <strong>Disease Prediction</strong>
+        <span>— select your symptoms to get an AI-based prediction.</span>
+      </div>
+    </div>
+
+    <!-- Main card -->
+    <div class="prediction-card mt-3">
+      <div class="prediction-card-inner">
+        <div class="prediction-title">
+          <span class="prediction-badge">AI-powered analysis</span>
+          <h3>🩺 Disease Prediction</h3>
+          <p class="prediction-subtitle">
+            Select up to five symptoms. We’ll analyze them and suggest a likely disease pattern.
+          </p>
+        </div>
+
+        <form id="symptomForm" method="POST" action="{% url 'predict_disease' %}" class="prediction-form">
+          {% csrf_token %}
+
+          <div class="row g-3">
+            {% for i in "12345" %}
+            <div class="col-md-6">
+              <label class="form-label">Symptom {{ forloop.counter }}</label>
+              <select name="symptom{{ forloop.counter }}" class="form-select symptom-select">
+                <option value="">-- Choose symptom --</option>
+                {% for s in symptoms %}
+                  <option value="{{ s }}">{{ s|underscore_to_space|capfirst }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            {% endfor %}
+          </div>
+
+          <div class="text-center prediction-actions">
+            <button id="submitBtn" type="submit" class="btn btn-primary px-4">
+              Predict Disease
+            </button>
+            <a href="{% url 'patient_dashboard' %}" class="btn btn-outline-secondary ms-2">
+              Back to Dashboard
+            </a>
+          </div>
+        </form>
+
+        <div class="alert prediction-note mt-4 mb-0">
+          <strong>Note:</strong>
+          This is an educational tool only. Do not rely on it for medical decisions.
+          Always consult a qualified healthcare professional for diagnosis and treatment.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function(){
+    const form = document.getElementById('symptomForm');
+    const selects = () => Array.from(document.querySelectorAll('.symptom-select'));
+    const submitBtn = document.getElementById('submitBtn');
+
+    function countDistinctSelected() {
+      const vals = selects().map(s => s.value).filter(v => v && v.trim() !== "");
+      const distinct = [...new Set(vals)];
+      return { total: vals.length, distinctCount: distinct.length, distinct };
+    }
+
+    form.addEventListener('submit', function(e){
+      const info = countDistinctSelected();
+      if (info.distinctCount < 2) {
+        e.preventDefault();
+        alert('⚠️ Please select at least 2 different symptoms.');
+      }
+    });
+
+    selects().forEach(s => s.addEventListener('change', () => {
+      const info = countDistinctSelected();
+      if (info.distinctCount < Math.max(1, info.total)) {
+        submitBtn.classList.remove('btn-primary');
+        submitBtn.classList.add('btn-warning');
+      } else {
+        submitBtn.classList.remove('btn-warning');
+        submitBtn.classList.add('btn-primary');
+      }
+    }));
+  })();
+</script>
+
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Edit Pharmacy Profile{% endblock %}
+{% block content %}
+
+<div class="container mt-5" style="max-width:720px;">
+  <div class="card p-4">
+    <h4 class="mb-3">Edit Pharmacy Details</h4>
+
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label class="form-label">Store Name</label>
+        <input type="text" name="pharmacy_name" class="form-control"
+               value="{{ profile.pharmacy_name|default_if_none:'' }}" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Store Address</label>
+        <textarea name="address" rows="3" class="form-control">{{ profile.address|default_if_none:'' }}</textarea>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">UPI ID</label>
+        <input type="text" name="upi_id" class="form-control" value="{{ profile.upi_id|default_if_none:'' }}">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">UPI QR (image)</label>
+        <input type="file" name="qr_code" class="form-control" accept="image/*">
+        {% if profile.upi_qr %}
+          <div class="mt-2">
+            <img src="{{ profile.upi_qr.url }}" alt="QR" style="max-width:140px;border-radius:8px;">
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="d-flex justify-content-between">
+        <a href="{% url 'pharmacy_dashboard' %}" class="btn btn-outline-secondary">← Back</a>
+        <button class="btn btn-primary" type="submit">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

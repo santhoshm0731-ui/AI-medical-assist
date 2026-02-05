@@ -1,0 +1,576 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}AI Medical Assistant — Smart Healthcare Platform{% endblock %}
+{% block content %}
+
+<style>
+body {
+  background: linear-gradient(135deg, #e0f7fa 0%, #f7fcff 100%);
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #0f172a;
+}
+
+/* Layout Helpers */
+.page-wrapper {
+  padding: 72px 0 72px;
+}
+
+.page-wrapper .container {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.section-spacer {
+  margin-top: 56px;
+}
+
+/* HERO SECTION */
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 40px;
+  min-height: 60vh;
+}
+
+.hero-text {
+  flex: 1 1 360px;
+  padding-right: 32px;
+}
+
+.hero-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(59,130,246,0.08);
+  color: #0369a1;
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.hero-pill-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #22c55e;
+  box-shadow: 0 0 0 4px rgba(34,197,94,0.3);
+}
+
+.hero-title {
+  font-size: 2.9rem;
+  line-height: 1.12;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 10px;
+}
+
+.hero-highlight {
+  background: linear-gradient(90deg, #3b82f6, #06b6d4);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.hero-sub {
+  font-size: 1.02rem;
+  color: #334155;
+  max-width: 480px;
+  margin-top: 10px;
+  margin-bottom: 24px;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.hero-primary-btn,
+.hero-secondary-btn {
+  border-radius: 999px;
+  font-weight: 600;
+  padding: 11px 22px;
+  font-size: 0.95rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.18s ease-out;
+}
+
+.hero-primary-btn {
+  background: linear-gradient(90deg, #2563eb, #06b6d4);
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(37,99,235,0.28);
+}
+
+.hero-primary-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 26px rgba(37,99,235,0.36);
+  filter: brightness(1.02);
+}
+
+.hero-secondary-btn {
+  background: rgba(255,255,255,0.9);
+  color: #0369a1;
+  border: 1px solid rgba(148,163,184,0.5);
+}
+
+.hero-secondary-btn:hover {
+  background: #e0f2fe;
+}
+
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 20px;
+  font-size: 0.86rem;
+  color: #64748b;
+}
+
+.hero-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hero-meta strong {
+  color: #0f172a;
+}
+
+/* Hero right side */
+.hero-lottie {
+  flex: 1 1 340px;
+  display: flex;
+  justify-content: center;
+}
+
+/* NO CARD AROUND LOTTIE – background only */
+.hero-lottie-inner {
+  width: 380px;
+  max-width: 100%;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+/* ABOUT SECTION */
+.about {
+  text-align: center;
+  margin-top: 72px;
+}
+
+.about-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(45,212,191,0.12);
+  color: #0f766e;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.about h3 {
+  color: #0284c7;
+  font-weight: 800;
+  font-size: 1.7rem;
+  margin-top: 16px;
+}
+
+.about p {
+  max-width: 760px;
+  margin: 16px auto 44px;
+  color: #334155;
+  font-size: 0.97rem;
+}
+
+/* JOIN CARDS */
+.join-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 28px;
+}
+
+.join-card {
+  width: 310px;
+  background: rgba(255,255,255,0.96);
+  border-radius: 18px;
+  box-shadow: 0 14px 32px rgba(15,23,42,0.12);
+  padding: 24px 20px 22px;
+  text-align: center;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  border: 1px solid rgba(148,163,184,0.35);
+  backdrop-filter: blur(14px);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 360px;
+}
+
+.join-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top, rgba(59,130,246,0.16), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.join-card:hover::before {
+  opacity: 1;
+}
+
+.join-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 50px rgba(30,64,175,0.28);
+  border-color: rgba(59,130,246,0.45);
+}
+
+.join-card-header {
+  position: relative;
+  z-index: 1;
+}
+
+.join-card h5 {
+  color: #0369a1;
+  font-weight: 700;
+  margin-top: 10px;
+  margin-bottom: 6px;
+  font-size: 1.05rem;
+}
+
+.join-card p {
+  color: #475569;
+  font-size: 0.9rem;
+  margin-bottom: 14px;
+}
+
+.join-card-footer {
+  margin-top: auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* Buttons inside join cards */
+.join-card .btn {
+  border-radius: 999px;
+  font-weight: 600;
+  margin-top: 12px;
+  padding: 9px 20px;
+  font-size: 0.9rem;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s ease-out;
+}
+
+/* Buttons */
+.btn-patient {
+  background: linear-gradient(90deg, #3b82f6, #06b6d4);
+  color: #f9fafb;
+}
+
+.btn-patient:hover {
+  box-shadow: 0 0 18px rgba(59,130,246,0.55);
+  filter: brightness(1.03);
+  color: #f9fafb;
+}
+
+.btn-doctor {
+  background: linear-gradient(90deg, #10b981, #059669);
+  color: #f9fafb;
+}
+
+.btn-doctor:hover {
+  box-shadow: 0 0 18px rgba(16,185,129,0.55);
+  filter: brightness(1.03);
+  color: #f9fafb;
+}
+
+/* Lottie Containers */
+#patientLottie,
+#doctorLottie,
+#pharmacyCardLottie {
+  width: 170px;
+  height: 170px;
+  margin: 0 auto 8px;
+}
+
+/* STATS SECTION */
+.stats-section {
+  margin-top: 64px;
+  text-align: center;
+}
+
+.stats-section h4 {
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+
+.stats-section p {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+
+.stats-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.stats-card {
+  min-width: 190px;
+  padding: 16px 20px 16px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.98);
+  border: 1px solid rgba(148,163,184,0.48);
+  box-shadow: 0 10px 24px rgba(15,23,42,0.12);
+}
+
+.stats-number {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #0369a1;
+  margin-bottom: 4px;
+}
+
+.stats-label {
+  font-size: 0.88rem;
+  color: #64748b;
+}
+
+/* RESPONSIVE */
+@media (max-width: 992px) {
+  .page-wrapper {
+    padding: 56px 0 56px;
+  }
+
+  .hero {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .hero-text {
+    padding-right: 0;
+  }
+
+  .hero-sub {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-actions {
+    justify-content: center;
+  }
+
+  .hero-meta {
+    justify-content: center;
+  }
+
+  .hero-lottie {
+    justify-content: center;
+  }
+
+  .hero-lottie-inner {
+    width: 320px;
+  }
+
+  .about {
+    margin-top: 56px;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero-title {
+    font-size: 2.2rem;
+  }
+
+  .join-card {
+    width: 100%;
+    max-width: 340px;
+  }
+
+  .hero-meta {
+    gap: 10px;
+  }
+
+  .stats-grid {
+    gap: 16px;
+  }
+}
+</style>
+
+<div class="page-wrapper">
+  <!-- HERO SECTION -->
+  <div class="container hero">
+    <div class="hero-text">
+      <div class="hero-pill animate__animated animate__fadeInDown">
+        <span class="hero-pill-dot"></span>
+        <span>Smart, AI-driven healthcare</span>
+      </div>
+      <h1 class="hero-title animate__animated animate__fadeInUp">
+        AI Medical <span class="hero-highlight">Assistant</span>
+      </h1>
+      <p class="hero-sub mt-3 animate__animated animate__fadeInUp animate__delay-1s">
+        Revolutionizing healthcare with AI — enabling disease prediction, chatbot consultations, and advanced analytics.
+      </p>
+
+      <div class="hero-actions animate__animated animate__fadeInUp animate__delay-2s">
+        <a href="{% url 'patient_login' %}" class="hero-primary-btn">
+          Get Started as Patient
+        </a>
+        <a href="{% url 'doctor_login' %}" class="hero-secondary-btn">
+          Doctor Portal
+        </a>
+      </div>
+
+      <div class="hero-meta animate__animated animate__fadeInUp animate__delay-3s">
+        <span><strong>Instant</strong> disease prediction</span>
+        <span>AI chatbot for quick help</span>
+        <span>Secure health analytics</span>
+      </div>
+    </div>
+
+    <div class="hero-lottie">
+      <div class="hero-lottie-inner">
+        <div id="heroLottie"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABOUT + JOIN SECTION -->
+  <div class="about container section-spacer">
+    <div class="about-badge">
+      <span>Platform Overview</span>
+    </div>
+    <h3>About the Platform</h3>
+    <p>
+      AI Medical Assistant is an intelligent healthcare ecosystem where patients can predict diseases,
+      consult the AI chatbot, and manage their health data — while doctors oversee appointments and
+      analytics effortlessly.
+    </p>
+
+    <div class="join-section">
+      <!-- Patient -->
+      <div class="join-card">
+        <div class="join-card-header">
+          <div id="patientLottie"></div>
+          <h5>Join as Patient</h5>
+          <p>Get personalized predictions, chatbot advice, and detailed analytics of your health records.</p>
+        </div>
+        <div class="join-card-footer">
+          <a href="{% url 'patient_login' %}" class="btn btn-patient">Join as Patient</a>
+        </div>
+      </div>
+
+      <!-- Doctor -->
+      <div class="join-card">
+        <div class="join-card-header">
+          <div id="doctorLottie"></div>
+          <h5>Join as Doctor</h5>
+          <p>Manage appointments, guide patients, and leverage data-driven medical insights with ease.</p>
+        </div>
+        <div class="join-card-footer">
+          <a href="{% url 'doctor_login' %}" class="btn btn-doctor">Join as Doctor</a>
+        </div>
+      </div>
+
+      <!-- Pharmacy -->
+      <div class="join-card">
+        <div class="join-card-header">
+          <div id="pharmacyCardLottie"></div>
+          <h5>Join as Pharmacy</h5>
+          <p>Add and manage your medicines with images, stock, price, and store address.</p>
+        </div>
+        <div class="join-card-footer">
+          <a href="{% url 'pharmacy_login' %}" class="btn btn-patient">Join as Pharmacy</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS SECTION -->
+  <div class="container stats-section">
+    <h4>Platform at a Glance</h4>
+    <p>Here’s who is currently using AI Medical Assistant.</p>
+
+    <div class="stats-grid">
+      <div class="stats-card">
+        <div class="stats-number">{{ num_patients }}</div>
+        <div class="stats-label">Registered Patients</div>
+      </div>
+
+      <div class="stats-card">
+        <div class="stats-number">{{ num_doctors }}</div>
+        <div class="stats-label">Registered Doctors</div>
+      </div>
+
+      <div class="stats-card">
+        <div class="stats-number">{{ num_pharmacies }}</div>
+        <div class="stats-label">Partner Pharmacies</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Lottie Animations -->
+<script src="https://unpkg.com/lottie-web@5.9.6/build/player/lottie.min.js"></script>
+<script>
+// Hero animation (local JSON)
+lottie.loadAnimation({
+  container: document.getElementById('heroLottie'),
+  renderer: 'svg',
+  loop: true,
+  autoplay: true,
+  path: "{% static 'lottie/home.json' %}"
+});
+
+// Patient card animation
+lottie.loadAnimation({
+  container: document.getElementById('patientLottie'),
+  renderer: 'svg',
+  loop: true,
+  autoplay: true,
+  path: "{% static 'lottie/patient.json' %}"
+});
+
+// Doctor card animation
+lottie.loadAnimation({
+  container: document.getElementById('doctorLottie'),
+  renderer: 'svg',
+  loop: true,
+  autoplay: true,
+  path: "{% static 'lottie/doctor.json' %}"
+});
+
+// Pharmacy card animation
+lottie.loadAnimation({
+  container: document.getElementById('pharmacyCardLottie'),
+  renderer: 'svg',
+  loop: true,
+  autoplay: true,
+  path: "{% static 'lottie/pharmacy.json' %}"
+});
+</script>
+
+{% endblock %}

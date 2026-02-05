@@ -1,0 +1,460 @@
+{% extends 'base.html' %}
+{% block title %}Health Analytics{% endblock %}
+{% block content %}
+
+<style>
+body {
+  background: radial-gradient(circle at top left, #e0f7fa 0%, #f9fafb 40%, #e0f2fe 85%);
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* PAGE LAYOUT */
+.analytics-page {
+  min-height: calc(100vh - 80px);
+  padding: 36px 0 44px;
+}
+
+.analytics-container {
+  max-width: 1180px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 22px;
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.16);
+  padding: 24px 24px 22px;
+  animation: fadeUp 0.7s ease;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(16px);
+}
+
+.analytics-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(56,189,248,0.16), transparent 60%);
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.analytics-inner {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* HEADER */
+.analytics-header {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.analytics-title {
+  color: #0f766e;
+  font-weight: 800;
+  font-size: 1.5rem;
+  margin-bottom: 4px;
+}
+
+.analytics-subtitle {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+/* SUMMARY GRID */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 18px;
+  margin: 18px 0 28px;
+}
+
+.summary-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(15,23,42,0.08);
+  text-align: left;
+  padding: 14px 14px 12px;
+  transition: transform 0.18s ease, box-shadow 0.22s ease;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.summary-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.12);
+}
+
+.summary-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(56,189,248,0.1);
+  font-size: 1.3rem;
+}
+
+.summary-content h4 {
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin-bottom: 2px;
+}
+
+.summary-content p {
+  color: #6b7280;
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+/* CHARTS */
+.chart-section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+  text-align: left;
+  margin-bottom: 6px;
+}
+
+.chart-section-subtitle {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-bottom: 10px;
+}
+
+.chart-wrapper {
+  background: rgba(255,255,255,0.9);
+  padding: 16px 16px 14px;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+  border: 1px solid #e5e7eb;
+  margin-bottom: 22px;
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 16px;
+  margin-top: 6px;
+}
+
+@media (max-width: 991.98px) {
+  .chart-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+canvas {
+  width: 100% !important;
+  height: 300px !important;
+}
+
+/* AI INSIGHTS */
+.ai-insights {
+  background: #f1fcf9;
+  border-radius: 16px;
+  padding: 16px 16px 14px;
+  margin-top: 10px;
+  box-shadow: 0 6px 16px rgba(15,23,42,0.06);
+  border: 1px solid #bbf7d0;
+}
+
+.ai-insights h5 {
+  color: #0f766e;
+  font-weight: 700;
+  margin-bottom: 6px;
+  font-size: 1rem;
+}
+
+.ai-insights p {
+  font-size: 0.88rem;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+/* ACTIONS */
+.analytics-actions {
+  margin-top: 18px;
+  text-align: center;
+}
+
+.analytics-actions .btn {
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.analytics-actions .btn-success {
+  padding: 9px 18px;
+}
+
+.analytics-actions .btn-danger {
+  padding: 9px 18px;
+}
+
+.analytics-back-btn {
+  display: inline-block;
+  margin-top: 10px;
+  margin-left: 6px;
+  background-color: #0f766e;
+  color: white;
+  border-radius: 999px;
+  padding: 9px 20px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.analytics-back-btn:hover {
+  background-color: #0b615a;
+  color: #ffffff;
+}
+
+/* Empty state */
+.analytics-empty {
+  margin-top: 26px;
+}
+
+/* Responsive tweaks */
+@media (max-width: 576px) {
+  .analytics-container {
+    padding: 18px 14px 16px;
+    border-radius: 18px;
+  }
+}
+</style>
+
+<div class="analytics-page">
+  <div class="container analytics-container">
+    <div class="analytics-inner">
+
+      <div class="analytics-header">
+        <h2 class="analytics-title">📊 Health Analytics Dashboard</h2>
+        <p class="analytics-subtitle">
+          Review your trends, vitals, and AI-generated insights based on your health records.
+        </p>
+      </div>
+
+      {% if has_records %}
+        <!-- Summary Section -->
+        <div class="summary-grid">
+          <div class="summary-card">
+            <div class="summary-icon">📁</div>
+            <div class="summary-content">
+              <h4>{{ summary.total_records }}</h4>
+              <p>Total records saved</p>
+            </div>
+          </div>
+
+          <div class="summary-card">
+            <div class="summary-icon">⚖️</div>
+            <div class="summary-content">
+              <h4>{{ summary.avg_weight|floatformat:1 }} kg</h4>
+              <p>Average weight</p>
+            </div>
+          </div>
+
+          <div class="summary-card">
+            <div class="summary-icon">📐</div>
+            <div class="summary-content">
+              <h4>{{ summary.avg_bmi|floatformat:1 }}</h4>
+              <p>Average BMI</p>
+            </div>
+          </div>
+
+          <div class="summary-card">
+            <div class="summary-icon">💓</div>
+            <div class="summary-content">
+              <h4>{{ summary.avg_heartrate|floatformat:0 }}</h4>
+              <p>Average heart rate</p>
+            </div>
+          </div>
+
+          <div class="summary-card">
+            <div class="summary-icon">🩸</div>
+            <div class="summary-content">
+              <h4>{{ summary.avg_oxygen|floatformat:0 }}%</h4>
+              <p>Average oxygen level</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="chart-grid">
+          <div>
+            <div class="chart-section-title">🏋️ Weight & BMI Trends</div>
+            <p class="chart-section-subtitle">
+              Track your weight and BMI changes over recent records.
+            </p>
+            <div class="chart-wrapper">
+              <canvas id="weightChart"></canvas>
+            </div>
+          </div>
+
+          <div>
+            <div class="chart-section-title">💓 Vital Signs Overview</div>
+            <p class="chart-section-subtitle">
+              Visual overview of sugar, oxygen, and heart rate variations.
+            </p>
+            <div class="chart-wrapper">
+              <canvas id="vitalsChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Insights -->
+        <div class="ai-insights">
+          <h5>🧠 AI Health Insights</h5>
+          <p>
+            Based on your average BMI ({{ summary.avg_bmi|floatformat:1 }}),
+            {% if summary.avg_bmi < 18.5 %}
+              you may be underweight. Increasing calorie intake with nutrient-dense, protein-rich foods can help you reach a healthier range.
+            {% elif summary.avg_bmi < 25 %}
+              you’re currently in a healthy BMI range. Maintain it with regular activity, balanced meals, and good sleep.
+            {% elif summary.avg_bmi < 30 %}
+              you’re slightly overweight. A combination of daily movement, portion control, and reduced sugar intake can improve your metrics.
+            {% else %}
+              your BMI is in a higher range. It’s recommended to consult a doctor or nutritionist for a tailored weight management plan.
+            {% endif %}
+          </p>
+          <p>
+            Your current weight trend is
+            <strong>
+              {% if summary.trend == 'up' %}
+                ⬆ increasing
+              {% elif summary.trend == 'down' %}
+                ⬇ decreasing
+              {% else %}
+                ⚖ stable
+              {% endif %}
+            </strong>.
+          </p>
+        </div>
+
+        <!-- Actions -->
+        <div class="analytics-actions">
+          <a href="{% url 'download_health_report' %}" class="btn btn-success me-2">
+            📄 Download Report (PDF)
+          </a>
+
+          <form
+            method="POST"
+            action="{% url 'clear_health_records' %}"
+            style="display:inline;"
+            onsubmit="return confirm('Are you sure you want to clear all health records?');"
+          >
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">
+              🗑️ Clear All Records
+            </button>
+          </form>
+
+          <a href="{% url 'patient_dashboard' %}" class="analytics-back-btn">
+            ← Back to Dashboard
+          </a>
+        </div>
+
+      {% else %}
+        <div class="alert alert-info analytics-empty">
+          No health records found.
+          Please go to <a href="{% url 'manage_health' %}">Manage Health</a> and add some records first.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  {% if has_records %}
+  const labels = [{% for r in recent_records %}'{{ r.date }}',{% endfor %}];
+
+  const weights = [{% for r in recent_records %}{{ r.weight_kg|default:"null" }},{% endfor %}];
+  const bmis = [{% for r in recent_records %}{{ r.bmi|default:"null" }},{% endfor %}];
+  const bp = [{% for r in recent_records %}{{ r.bp|default:"null" }},{% endfor %}];
+  const sugar = [{% for r in recent_records %}{{ r.sugar|default:"null" }},{% endfor %}];
+  const heartrate = [{% for r in recent_records %}{{ r.heartrate|default:"null" }},{% endfor %}];
+  const oxygen = [{% for r in recent_records %}{{ r.oxygen|default:"null" }},{% endfor %}];
+
+  // Weight & BMI Chart
+  new Chart(document.getElementById('weightChart'), {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Weight (kg)',
+          data: weights,
+          borderColor: '#0f766e',
+          backgroundColor: 'rgba(15,118,110,0.15)',
+          fill: true,
+          tension: 0.4
+        },
+        {
+          label: 'BMI',
+          data: bmis,
+          borderColor: '#f97316',
+          backgroundColor: 'rgba(249,115,22,0.15)',
+          fill: true,
+          tension: 0.4
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom' }
+      },
+      scales: {
+        x: {
+          ticks: { font: { size: 10 } }
+        },
+        y: {
+          beginAtZero: false,
+          ticks: { font: { size: 10 } }
+        }
+      }
+    }
+  });
+
+  // Vitals Chart
+  new Chart(document.getElementById('vitalsChart'), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        { label: 'Sugar (mg/dL)', data: sugar, backgroundColor: '#3b82f6' },
+        { label: 'Oxygen (%)', data: oxygen, backgroundColor: '#10b981' },
+        { label: 'Heart Rate (bpm)', data: heartrate, backgroundColor: '#ef4444' }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: {
+          ticks: { font: { size: 10 } }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: { font: { size: 10 } }
+        }
+      },
+      plugins: {
+        legend: { position: 'bottom' }
+      }
+    }
+  });
+  {% endif %}
+});
+</script>
+
+{% endblock %}

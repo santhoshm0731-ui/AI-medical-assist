@@ -1,0 +1,475 @@
+{% extends 'base.html' %}
+{% block title %}Book Appointment{% endblock %}
+{% block content %}
+
+<style>
+body {
+  background: radial-gradient(circle at top left, #e0f7fa 0%, #f9fafb 40%, #e0e7ff 85%);
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* PAGE LAYOUT */
+.booking-page {
+  min-height: calc(100vh - 80px);
+  padding: 36px 0 44px;
+}
+
+.container-card {
+  background: rgba(255,255,255,0.97);
+  padding: 22px 22px 20px;
+  border-radius: 24px;
+  box-shadow: 0 20px 52px rgba(15,23,42,0.20);
+  border: 1px solid rgba(226,232,240,0.9);
+  backdrop-filter: blur(18px);
+  position: relative;
+  overflow: hidden;
+}
+
+.container-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(56,189,248,0.18), transparent 60%);
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.booking-inner {
+  position: relative;
+  z-index: 1;
+}
+
+/* HEADER */
+.booking-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.booking-title-wrap h3 {
+  margin: 0;
+  font-weight: 800;
+  color: #0f172a;
+  font-size: 1.45rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.booking-title-wrap h3 span.emoji {
+  font-size: 1.5rem;
+}
+
+.booking-subtitle {
+  margin: 4px 0 0;
+  font-size: 0.88rem;
+  color: #6b7280;
+}
+
+.booking-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.booking-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: rgba(56,189,248,0.1);
+  color: #0369a1;
+  border: 1px solid rgba(56,189,248,0.3);
+}
+
+.booking-pill.secondary {
+  background: rgba(16,185,129,0.08);
+  color: #047857;
+  border-color: rgba(34,197,94,0.3);
+}
+
+/* TOP INFO STRIP */
+.booking-info-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 0.82rem;
+  color: #6b7280;
+}
+
+.booking-info-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #f9fafb;
+}
+
+/* SEARCH BAR */
+.search-row {
+  display:flex;
+  flex-wrap: wrap;
+  gap:10px;
+  margin-bottom:8px;
+  align-items:center;
+}
+
+.search-input {
+  flex:1 1 220px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  padding-left: 14px;
+}
+
+.btn-search {
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.btn-clear {
+  border-radius: 999px;
+  font-size: 0.9rem;
+}
+
+.search-tip {
+  font-size: 0.8rem;
+  color:#6b7280;
+  margin-bottom: 12px;
+}
+
+/* DOCTOR CARDS */
+.doctor-card {
+  border-radius:18px;
+  padding:14px 14px 12px;
+  transition: transform .18s ease, box-shadow .22s ease, border-color .18s ease, background .18s ease;
+  border: 1px solid #e5e7eb;
+  background: linear-gradient(145deg, #ffffff, #f9fafb);
+  position: relative;
+  overflow: hidden;
+}
+
+.doctor-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top left, rgba(56,189,248,0.12), transparent 65%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.doctor-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 34px rgba(15,23,42,0.18);
+  border-color: rgba(56,189,248,0.55);
+  background: #ffffff;
+}
+
+.doctor-card:hover::before {
+  opacity: 1;
+}
+
+.doctor-header {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+}
+
+/* Left: avatar + doctor info */
+.doctor-main {
+  display:flex;
+  gap:10px;
+}
+
+.doctor-avatar {
+  width:42px;
+  height:42px;
+  border-radius:999px;
+  background:rgba(56,189,248,0.15);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.4rem;
+  border: 1px solid rgba(191,219,254,0.8);
+}
+
+.doctor-text h5 {
+  margin:0;
+  font-size:1rem;
+  font-weight:700;
+  color:#0f172a;
+}
+
+.doctor-username {
+  font-size:0.78rem;
+  color:#6b7280;
+}
+
+.doctor-specialty-badge {
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  font-size:0.78rem;
+  padding:3px 9px;
+  border-radius:999px;
+  background:rgba(16,185,129,0.08);
+  color:#047857;
+  margin-top:4px;
+}
+
+.meta {
+  color:#4b5563;
+  font-size:0.85rem;
+  margin-top:4px;
+}
+
+.meta-row {
+  line-height:1.35;
+}
+
+.meta-label {
+  font-weight:600;
+}
+
+/* Fees line */
+.doctor-fees {
+  font-size:0.85rem;
+  color:#0f172a;
+  margin-top:4px;
+}
+
+/* Right: booking form */
+.doctor-booking {
+  min-width: 170px;
+  text-align:right;
+}
+
+.doctor-booking label {
+  font-size:0.78rem;
+  color:#6b7280;
+  margin-bottom:2px;
+}
+
+.doctor-booking .date-input {
+  font-size:0.85rem;
+  border-radius:12px;
+  padding:6px 8px;
+}
+
+.book-btn {
+  min-width:110px;
+  border-radius:999px;
+  font-size:0.88rem;
+  font-weight:600;
+}
+
+/* NO RESULTS */
+.no-results {
+  text-align:center;
+  color:#6b7280;
+  padding:32px 0 12px;
+  font-size:0.9rem;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .doctor-header {
+    flex-direction:column;
+  }
+  .doctor-booking {
+    text-align:left;
+  }
+}
+
+@media (max-width: 576px) {
+  .container-card {
+    padding: 18px 14px 16px;
+    border-radius: 20px;
+  }
+}
+</style>
+
+<div class="booking-page">
+  <div class="container">
+    <div class="container-card">
+      <div class="booking-inner">
+        <!-- Header -->
+        <div class="booking-header">
+          <div class="booking-title-wrap">
+            <h3>
+              <span class="emoji">📅</span>
+              <span>Book Appointment</span>
+            </h3>
+            <p class="booking-subtitle">
+              Browse available doctors and schedule a consultation in a few clicks.
+            </p>
+          </div>
+          <div class="booking-badges">
+            <div class="booking-pill">
+              <span>Smart scheduling</span>
+            </div>
+            {% if doctors %}
+            <div class="booking-pill secondary">
+              <span>Available doctors: {{ doctors|length }}</span>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="booking-info-strip">
+          <div class="booking-info-item">
+            🔍 Filter by name, specialty, or address.
+          </div>
+          <div class="booking-info-item">
+            📆 Only today and future dates can be booked.
+          </div>
+        </div>
+
+        <!-- Search -->
+        <form method="GET" class="mb-2 search-row" id="searchForm">
+          <input
+            type="search"
+            name="q"
+            placeholder="Search by doctor name, specialty, or address"
+            value="{{ q }}"
+            class="form-control search-input"
+            id="doctorSearch"
+          >
+          <button type="submit" class="btn btn-primary btn-search">Search</button>
+          <a href="{% url 'book_appointment' %}" class="btn btn-outline-secondary btn-clear">Clear</a>
+        </form>
+
+        <div class="search-tip">
+          Tip: Start typing to filter instantly. Try
+          <strong>“cardiologist”</strong>, <strong>“skin”</strong>, or your <strong>city/area</strong>.
+        </div>
+
+        <!-- Doctors List -->
+        <div class="row g-3" id="doctorsList">
+          {% if doctors %}
+            {% for doctor in doctors %}
+            <div class="col-md-6">
+              <div class="doctor-card card border-0">
+                <div class="doctor-header">
+                  <!-- Left: Doctor info -->
+                  <div class="doctor-main">
+                    <div class="doctor-avatar">
+                      🩺
+                    </div>
+                    <div class="doctor-text">
+                      <h5>{{ doctor.get_full_name|default:doctor.username }}</h5>
+                      <div class="doctor-username">@{{ doctor.username }}</div>
+
+                      {% if doctor.doctorprofile.specialty %}
+                        <div class="doctor-specialty-badge">
+                          <span>👨‍⚕️ {{ doctor.doctorprofile.specialty }}</span>
+                        </div>
+                      {% endif %}
+
+                      <div class="meta">
+                        <div class="meta-row">
+                          <span class="meta-label">Email:</span> {{ doctor.email }}
+                        </div>
+                        <div class="meta-row">
+                          <span class="meta-label">Address:</span>
+                          {{ doctor.doctorprofile.address|default:"—" }}
+                        </div>
+                        <div class="doctor-fees">
+                          <span class="meta-label">Fees:</span>
+                          {% if doctor.doctorprofile.fees %}
+                            ₹{{ doctor.doctorprofile.fees }}
+                          {% else %}
+                            —
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Right: Booking form -->
+                  <div class="doctor-booking">
+                    <form method="POST" style="width:100%; max-width:210px;">
+                      {% csrf_token %}
+                      <input type="hidden" name="doctor" value="{{ doctor.id }}">
+                      <div class="mb-2">
+                        <label>Select date</label>
+                        <input
+                          type="date"
+                          name="date"
+                          class="form-control date-input"
+                          required
+                          min="{{ today }}"
+                        >
+                      </div>
+                      <button type="submit" class="btn btn-success book-btn">
+                        Book Now
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          {% else %}
+            <div class="col-12 no-results">
+              <p>😕 No doctors found. Try a broader keyword or click <strong>Clear</strong> to reset filters.</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const searchInput = document.getElementById('doctorSearch');
+  const doctorsList = document.getElementById('doctorsList');
+
+  // Instant client-side filter
+  if (searchInput && doctorsList) {
+    searchInput.addEventListener('input', function(e) {
+      const q = e.target.value.trim().toLowerCase();
+      const cards = doctorsList.querySelectorAll('.doctor-card');
+      cards.forEach(card => {
+        const text = card.innerText.toLowerCase();
+        const col = card.closest('.col-md-6');
+        if (!col) return;
+        col.style.display = text.includes(q) ? '' : 'none';
+      });
+    });
+  }
+
+  // Prevent booking past dates
+  const dateInputs = document.querySelectorAll('.date-input');
+  const todayJS = new Date();
+  const yyyy = todayJS.getFullYear();
+  const mm = String(todayJS.getMonth() + 1).padStart(2, '0');
+  const dd = String(todayJS.getDate()).padStart(2, '0');
+  const todayStr = `${yyyy}-${mm}-${dd}`;
+
+  dateInputs.forEach(input => {
+    // Fallback if template variable fails
+    input.min = "{{ today }}" || todayStr;
+    input.addEventListener('change', () => {
+      if (input.value < input.min) {
+        alert('Please choose today or a future date.');
+        input.value = '';
+      }
+    });
+  });
+});
+</script>
+
+{% endblock %}

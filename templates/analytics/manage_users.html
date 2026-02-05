@@ -1,0 +1,429 @@
+{% extends 'base.html' %}
+{% block title %}Manage Users{% endblock %}
+{% block content %}
+
+<style>
+  body {
+    background: radial-gradient(circle at top left, #e0f7fa 0%, #f9fafb 40%, #e0e7ff 85%);
+    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  .manage-page {
+    min-height: calc(100vh - 80px);
+    padding: 28px 10px 40px;
+  }
+
+  .manage-shell {
+    max-width: 1180px;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.97);
+    border-radius: 24px;
+    box-shadow: 0 22px 55px rgba(15,23,42,0.18);
+    border: 1px solid rgba(226,232,240,0.9);
+    backdrop-filter: blur(18px);
+    padding: 22px 22px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .manage-shell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top right, rgba(56,189,248,0.18), transparent 60%);
+    opacity: 0.9;
+    pointer-events: none;
+  }
+
+  .manage-inner {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  .manage-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .manage-title-block h3 {
+    margin: 0;
+    font-weight: 800;
+    color: #0f172a;
+    font-size: 1.35rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .manage-title-block h3 span.icon {
+    font-size: 1.5rem;
+  }
+
+  .manage-subtitle {
+    margin: 3px 0 0;
+    font-size: 0.85rem;
+    color: #6b7280;
+  }
+
+  .manage-header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .back-dashboard-btn {
+    border-radius: 999px;
+    font-size: 0.8rem;
+    padding: 7px 12px;
+    font-weight: 600;
+  }
+
+  .role-pill-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 0.78rem;
+    color: #6b7280;
+  }
+
+  .role-pill-legend span.badge {
+    font-size: 0.7rem;
+  }
+
+  /* ADD USER CARD */
+  .add-user-card {
+    background: linear-gradient(145deg, #ffffff, #f9fafb);
+    border-radius: 18px;
+    padding: 16px 16px 12px;
+    margin-bottom: 18px;
+    box-shadow: 0 10px 28px rgba(15,23,42,0.1);
+    border: 1px solid rgba(226,232,240,0.9);
+  }
+
+  .add-user-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .add-user-title {
+    font-weight: 700;
+    font-size: 0.98rem;
+    color: #0f766e;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .add-user-title span.icon {
+    font-size: 1.2rem;
+  }
+
+  .add-user-sub {
+    font-size: 0.8rem;
+    color: #6b7280;
+  }
+
+  .btn-add {
+    background: linear-gradient(90deg,#0f766e,#0ea5e9);
+    color: #ffffff;
+    font-weight: 600;
+    border-radius: 999px;
+    border: none;
+    box-shadow: 0 8px 20px rgba(14,165,233,0.35);
+    font-size: 0.85rem;
+  }
+  .btn-add:hover {
+    filter: brightness(1.05);
+    box-shadow: 0 10px 24px rgba(14,165,233,0.45);
+  }
+
+  /* SEARCH / FILTER ROW */
+  .manage-filters {
+    margin-bottom: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .manage-filters .form-control,
+  .manage-filters .form-select {
+    font-size: 0.85rem;
+    border-radius: 999px;
+  }
+
+  /* TABLE WRAPPER */
+  .table-container {
+    background: rgba(255,255,255,0.98);
+    padding: 12px 12px 8px;
+    border-radius: 18px;
+    box-shadow: 0 10px 28px rgba(15,23,42,0.12);
+    animation: fadeUp 0.7s ease;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .table {
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 0;
+  }
+
+  .table thead {
+    background: #0f766e;
+    color: white;
+  }
+
+  .table thead th {
+    border-bottom: none;
+    font-size: 0.82rem;
+    white-space: nowrap;
+  }
+
+  .table tbody tr {
+    font-size: 0.86rem;
+  }
+
+  .table tbody tr:hover {
+    background-color: #ecfeff;
+  }
+
+  .btn-delete {
+    color: #ffffff;
+    background: #dc2626;
+    border: none;
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+  .btn-delete:hover {
+    background: #b91c1c;
+  }
+
+  .role-badge {
+    font-size: 0.72rem;
+    padding: 4px 9px;
+    border-radius: 999px;
+  }
+
+  @media (max-width: 768px) {
+    .manage-shell {
+      padding: 18px 14px 18px;
+      border-radius: 20px;
+    }
+  }
+</style>
+
+<div class="manage-page">
+  <div class="manage-shell">
+    <div class="manage-inner">
+
+      <!-- HEADER -->
+      <div class="manage-header">
+        <div class="manage-title-block">
+          <h3>
+            <span class="icon">👥</span>
+            <span>Manage Users</span>
+          </h3>
+          <p class="manage-subtitle">
+            Create, review and remove users across all roles in the platform.
+          </p>
+        </div>
+        <div class="manage-header-actions">
+          <a href="{% url 'admin_analytics_dashboard' %}"
+             class="btn btn-outline-primary btn-sm back-dashboard-btn">
+            ← Back to Admin Dashboard
+          </a>
+        </div>
+      </div>
+
+      <!-- ROLE LEGEND -->
+      <div class="role-pill-legend mb-2">
+        <span class="me-2 small text-muted">Role legend:</span>
+        <span class="badge bg-danger">Admin</span>
+        <span class="badge bg-success">Doctor</span>
+        <span class="badge bg-info text-dark">Patient</span>
+        <span class="badge bg-warning text-dark">Pharmacy</span>
+        <span class="badge bg-secondary">User</span>
+      </div>
+
+      <!-- ADD USER CARD -->
+      <div class="add-user-card">
+        <div class="add-user-header">
+          <div>
+            <div class="add-user-title">
+              <span class="icon">➕</span>
+              <span>Add New User</span>
+            </div>
+            <div class="add-user-sub">
+              Quick-create a user account and assign a role. Password will follow your backend logic.
+            </div>
+          </div>
+        </div>
+
+        <form method="POST" class="mb-1">
+          {% csrf_token %}
+          <div class="row g-2 align-items-center">
+            <div class="col-lg-4 col-md-4 col-sm-6">
+              <input type="text"
+                     name="username"
+                     class="form-control"
+                     placeholder="Username"
+                     required>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-6">
+              <input type="email"
+                     name="email"
+                     class="form-control"
+                     placeholder="Email"
+                     required>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-6 mt-sm-1">
+              <select name="role" class="form-select">
+                <option value="patient">Patient</option>
+                <option value="doctor">Doctor</option>
+                <option value="pharmacy">Pharmacy</option>
+              </select>
+            </div>
+            <div class="col-lg-1 col-md-1 col-sm-6 text-end mt-sm-1">
+              <button type="submit" class="btn btn-add w-100">
+                Add
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- FILTERS -->
+      <div class="manage-filters">
+        <div class="flex-grow-1">
+          <input type="text"
+                 id="userSearch"
+                 class="form-control"
+                 placeholder="Search by username or email…">
+        </div>
+        <div style="min-width: 140px;">
+          <select id="roleFilter" class="form-select">
+            <option value="">All roles</option>
+            <option value="Admin">Admin</option>
+            <option value="Doctor">Doctor</option>
+            <option value="Patient">Patient</option>
+            <option value="Pharmacy">Pharmacy</option>
+            <option value="User">User</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- USER TABLE -->
+      <div class="table-container">
+        {% if users %}
+          <div class="table-wrapper">
+            <table class="table table-striped text-center align-middle" id="usersTable">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Date Joined</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for u in users %}
+                  <tr>
+                    <td>{{ u.id }}</td>
+                    <td class="username-cell">{{ u.username }}</td>
+                    <td class="email-cell">{{ u.email }}</td>
+                    <td class="role-cell">
+                      {% if u.is_superuser %}
+                        <span class="role-badge bg-danger text-white">Admin</span>
+                      {% elif u.is_doctor %}
+                        <span class="role-badge bg-success text-white">Doctor</span>
+                      {% elif u.is_patient %}
+                        <span class="role-badge bg-info text-dark">Patient</span>
+                      {% elif u.is_pharmacy %}
+                        <span class="role-badge bg-warning text-dark">Pharmacy</span>
+                      {% else %}
+                        <span class="role-badge bg-secondary text-white">User</span>
+                      {% endif %}
+                    </td>
+                    <td>{{ u.date_joined|date:"Y-m-d H:i" }}</td>
+                    <td>
+                      {% if not u.is_superuser %}
+                        <form method="POST"
+                              action="{% url 'delete_user' u.id %}"
+                              style="display:inline;"
+                              onsubmit="return confirm('Delete user {{ u.username }}? This cannot be undone.');">
+                          {% csrf_token %}
+                          <button type="submit" class="btn-delete btn-sm">
+                            Delete
+                          </button>
+                        </form>
+                      {% else %}
+                        <span class="text-muted">—</span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p class="text-center text-muted mb-0">No users found.</p>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  // Simple client-side search + role filter (no backend changes)
+  document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("userSearch");
+    const roleFilter = document.getElementById("roleFilter");
+    const table = document.getElementById("usersTable");
+    if (!table) return;
+    const rows = table.querySelectorAll("tbody tr");
+
+    function applyFilter() {
+      const q = (searchInput.value || "").toLowerCase();
+      const role = roleFilter.value;
+
+      rows.forEach(row => {
+        const username = row.querySelector(".username-cell")?.textContent.toLowerCase() || "";
+        const email = row.querySelector(".email-cell")?.textContent.toLowerCase() || "";
+        const roleText = row.querySelector(".role-cell")?.textContent.trim() || "";
+
+        const matchesSearch = username.includes(q) || email.includes(q);
+        const matchesRole = !role || roleText.includes(role);
+
+        row.style.display = (matchesSearch && matchesRole) ? "" : "none";
+      });
+    }
+
+    searchInput.addEventListener("input", applyFilter);
+    roleFilter.addEventListener("change", applyFilter);
+  });
+</script>
+
+{% endblock %}
