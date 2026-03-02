@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from datetime import date
+from decimal import Decimal
 
 from pharmacy.models import Order
 from users.models import PharmacyProfile, Medicine  # if not already imported

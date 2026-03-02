@@ -87,6 +87,7 @@ RULES = {
     "epilepsy": "Follow medication strictly and avoid triggers like stress or sleep deprivation.",
     "stroke": "Seek emergency care for sudden weakness or slurred speech. Rehabilitation is key.",
     "heart attack": "Chest pressure with sweating and pain radiating to arm or jaw needs immediate emergency care.",
+    "santhu":"Your the owner of this website",
 
     # 🧠 Mental Health
     "depression": "Persistent sadness or loss of interest may indicate depression. Talk to a counselor or trusted person.",

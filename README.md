@@ -61,3 +61,9 @@ http://127.0.0.1:8000/
 ```bash
 git clone https://github.com/santhoshm0731-ui/AI-medical-assist.git
 cd https://github.com/santhoshm0731-ui/AI-medical-assist.git
+```
+# Important notes (If You want Online Chatbot)
+- #### create folder called models in project root 
+- #### store your models there(eg. DialoGPt-small from hugging face)
+
+
