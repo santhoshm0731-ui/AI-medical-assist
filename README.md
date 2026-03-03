@@ -68,6 +68,36 @@ http://127.0.0.1:8000/
 git clone https://github.com/santhoshm0731-ui/AI-medical-assist.git
 cd https://github.com/santhoshm0731-ui/AI-medical-assist.git
 ```
+## 📸 Demo Screenshots
+
+### 🏠 Home Page
+![Home Page](screenshots/home.png)
+
+
+### 🔐 Signup Page
+![Login](screenshots/signup.png)
+
+### 🔐 Login Page
+![Login](screenshots/login.png)
+
+### 📊 Patient Dashboard
+![Dashboard](screenshots/dashboard-patient.png)
+
+### 📊 Doctor Dashboard
+![Dashboard](screenshots/dashboard-doctor.png)
+
+### 🏥 Pharmacy Dashboard
+![Dashboard](screenshots/dashboard-pharma.png)
+
+### 🧠 Disease Prediction
+![Prediction](screenshots/prediction.png)
+
+### 🤖 AI Chatbot
+![Prediction](screenshots/chatbot.png)
+
+### 📊 Appointments
+![Dashboard](screenshots/appointments.png)
+
 # Important notes (If You want Online Chatbot)
 - #### create folder called models in project root 
 - #### store your models there(eg. DialoGPt-small from hugging face)
