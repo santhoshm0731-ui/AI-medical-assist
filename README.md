@@ -3,6 +3,12 @@
 An AI-powered medical assistant web application built using Django and Machine Learning.
 
 ---
+## ⭐ Support This Project
+
+If you find this project useful, please consider giving it a star ⭐ on GitHub.  
+It helps increase visibility and motivates me to build more projects!
+
+👉 Click the ⭐ Star button at the top right of this repository.
 
 ## 🚀 Features
 - Patient & Doctor authentication
