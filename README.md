@@ -71,11 +71,11 @@ cd https://github.com/santhoshm0731-ui/AI-medical-assist.git
 ## 📸 Demo Screenshots
 
 ### 🏠 Home Page
-![Home Page](screenshots/home.png)
+![Home Page](screenshots/homepage.png)
 
 
 ### 🔐 Signup Page
-![Login](screenshots/signup.png)
+![Login](screenshots/register.png)
 
 ### 🔐 Login Page
 ![Login](screenshots/login.png)
