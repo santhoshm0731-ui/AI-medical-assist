@@ -42,7 +42,7 @@ It helps increase visibility and motivates me to build more projects!
 ### 3️⃣ Install dependencies:
 - pip install -r requirements.txt
 
- ### 4️⃣ Add .env file in your project root
+ ### 4️⃣ Add .env file in your project root(## Only in case of online chatbot)
 #### put:
 ```env
 
